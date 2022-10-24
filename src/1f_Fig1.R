@@ -27,7 +27,7 @@ biomass <- read_csv('../data_processed/biomass_duration.csv')
 
 discharge <- read_csv('../data_processed/discharge.csv')
 
-cw <- readRDS('../data_input/yearly_clearwater_stats.rds')
+cw <- readRDS('../data_processed/yearly_clearwater_stats.rds')
 
 nutrients <- read_csv('../data_processed/nutrients.csv')
 
