@@ -274,7 +274,7 @@ g8 <- ggplot(df,aes(Clearwater.Duration, AF)) +
 
 g9 <- ggplot(df,aes(Spiny, AF)) + 
   geom_point() +
-  xlab('Spiny waterflea biomass (?)') + ylab('Anoxic factor (d)') +
+  xlab('Spiny waterflea biomass (counts)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
   stat_poly_eq(formula = my.formula,
                aes(label = paste( ..rr.label.., sep = "~~~")),

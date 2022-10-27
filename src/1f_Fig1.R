@@ -175,7 +175,7 @@ g14 <- ggplot(df) +
 g15 <- ggplot(df) +
   geom_line(aes(year, Spiny)) +
   geom_point(aes(year, Spiny)) +
-  ylab('Spiny Waterflea (?)') + xlab('') +
+  ylab('Spiny Waterflea (counts)') + xlab('') +
   geom_vline(xintercept=2010, linetype = 'dashed') +
   theme_bw(); 
 
