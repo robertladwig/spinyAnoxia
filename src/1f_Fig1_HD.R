@@ -70,20 +70,10 @@ df <- merge(df, df.cw, by = 'year')
 df <- merge(df, df.nutrients, by = 'year')
 df <- merge(df, df.spiny, by = 'year')
 
-
+# Define colors
 cool.col <- c("#00AFBB", "#E7B800", "#FC4E07")
 
-
-
- 
-# g9 <- ggplot(df) +
-#   geom_ribbon(aes(x = year, ymin = min.discharge, ymax = discharge), fill = 'grey80') +
-#   geom_line(aes(year, discharge)) +
-#   geom_point(aes(year, discharge)) +
-#   ylab('Yahara Q (cfs)') + xlab('') +
-#   geom_vline(xintercept=2010, linetype = 'dashed') +
-#   theme_bw(base_size = 8); 
-
+# Function to plot timeseries 
 plotG <- function(df, var, ylabs) {
   g1 = ggplot(df) +
     geom_line(aes_string('year', var), size = 0.3) +
@@ -125,30 +115,6 @@ g7 = plotG(df, 'Jz', 'Vol. & Areal Fluxes' ) + #expression("Volumetric flux ["*g
         legend.title = element_blank(), 
         legend.background = element_rect(fill = "transparent"),
         legend.key.height = unit(0.1, 'cm'))
-# 
-# ggplot(df, aes(year, Jz, col = 'Volumetric'), col = cool.col[1]) +
-#   geom_line(aes(year, Jv, col = 'Volumetric'), col = cool.col[1]) +
-#   # geom_line(aes(year, Jz, col = 'Median Flux')) +
-#   geom_point(aes(year, Jv, col = 'Volumetric'), col = cool.col[1]) +
-#   # geom_point(aes(year, Jz, col = 'Median Flux')) +
-#   geom_smooth(method = "loess", size = 1.5, col = cool.col[1]) +
-#   geom_line(aes(year, Ja , col = 'Areal'), col = cool.col[2]) +
-#   geom_point(aes(year, Ja , col = 'Areal'), col = cool.col[2]) +
-#   geom_smooth(aes(year, Ja , col = 'Areal'), method = "loess", size = 1.5, col = cool.col[2]) +
-#   scale_y_continuous(sec.axis = sec_axis(~.*1, name = expression("Areal flux ["*g~m^{-2}*d^{-1}*"]"))) +
-#   ylab(expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")) + xlab('') +
-#   geom_vline(xintercept=2010, linetype = 'dashed') +
-#   theme_bw(base_size = 8)+
-#   theme(axis.line.y.right = element_line(color = cool.col[2]),
-#         axis.ticks.y.right = element_line(color =cool.col[2]),
-#         axis.text.y.right = element_text(color = cool.col[2]),
-#         axis.title.y.right = element_text(color = cool.col[2]),
-#         axis.line.y.left = element_line(color = cool.col[1]),
-#         axis.ticks.y.left = element_line(color = cool.col[1]),
-#         axis.text.y.left = element_text(color = cool.col[1]),
-#         axis.title.y.left = element_text(color = cool.col[1]),
-#         legend.position = "none"
-#   )
 
 library(ggpubr)
 df.prior = df %>%
@@ -159,7 +125,7 @@ m.df.prior <- reshape2::melt(df.prior, id = 'class')
 compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'AF'), method ="kruskal.test")
 
-
+# Function to plot boxplots 
 plotBP <- function(var, ylabs) {
   p1 <- ggboxplot(data = m.df.prior %>% dplyr::filter(variable == var), x = "class", y = "value",
                   xlab = '', ylab = ylabs, fill = 'class', palette = c(col.pre, col.post), #palette = "jco", 
@@ -173,7 +139,7 @@ plotBP <- function(var, ylabs) {
           axis.title.x = element_blank())
   return(p1)
 }
-plotBP('AF','Anoxic Factor')
+
 
 p1 = plotBP('AF','Anoxic Factor')
 p2 = plotBP('med', 'Days Stratified')
@@ -185,7 +151,7 @@ p9 = plotBP('NO3.NO2.N_surf', 'NO3-NO2-N surf')
 p11 = plotBP('Spiny', 'Spiny Waterflea')
 p10 = plotBP('RSi', 'RSi')
 
-# 
+
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'med'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'med'), method ="kruskal.test")
 # 
@@ -288,13 +254,13 @@ plot(bp.nile)
 ocus.nile <- efp(AF ~ 1, type = "OLS-CUSUM")
 
 
-opar <- par(mfrow=c(2,1), mar=c(2,2,0,2))
-plot(ocus.nile, alt.boundary=F,main="")
-abline(v= 2010, lty=2, col='red')
-plot(AF, ylab="Annual Flow of the river Nile") > abline(h= mean(AF),col='blue')
-abline(v= 2010, lty=2, col='red')
-lines(ts(predict(fm1.nile),start=1996,freq=1), col='darkgreen',lwd=2)
-par(opar)
+# opar <- par(mfrow=c(2,1), mar=c(2,2,0,2))
+# plot(ocus.nile, alt.boundary=F,main="")
+# abline(v= 2010, lty=2, col='red')
+# plot(AF, ylab="Annual Flow of the river Nile") > abline(h= mean(AF),col='blue')
+# abline(v= 2010, lty=2, col='red')
+# lines(ts(predict(fm1.nile),start=1996,freq=1), col='darkgreen',lwd=2)
+# par(opar)
 
 brekpn <- data.frame('year' = df$year,
                      'order' = as.numeric(ts(predict(fm1.nile),start=1996,freq=1)))
