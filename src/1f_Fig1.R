@@ -155,7 +155,7 @@ g12 <- ggplot(df) +
   geom_point(aes(year, PO4.P_surf )) +
   geom_line(aes(year, PO4.P_bot), linetype = 'dashed') +
   geom_point(aes(year, PO4.P_bot)) +
-  ylab('Phosphate (mg/L)') + xlab('') +
+  ylab('SRP (mg/L)') + xlab('') +
   geom_vline(xintercept=2010, linetype = 'dashed') +
   theme_bw(); 
 g13 <- ggplot(df) +
@@ -163,7 +163,7 @@ g13 <- ggplot(df) +
   geom_point(aes(year, NO3.NO2.N_surf)) +
   geom_line(aes(year, NO3.NO2.N_bot ), linetype = 'dashed') +
   geom_point(aes(year, NO3.NO2.N_bot)) +
-  ylab('Nitrate (mg/L)') + xlab('') +
+  ylab('NO3-NO2-N (mg/L)') + xlab('') +
   geom_vline(xintercept=2010, linetype = 'dashed') +
   theme_bw(); 
 g14 <- ggplot(df) +
@@ -196,7 +196,7 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'AF'), method ="kruskal.test")
 
 p1 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'AF'), x = "class", y = "value",
-                palette = "jco", xlab = '', ylab = 'Anoxic Factor',fill = c(col.pre, col.post),
+                palette = "jco", xlab = '', ylab = 'Anoxic Factor (days)',fill = c(col.pre, col.post),
                 add = "jitter")
 #  Add p-value
 p1 = p1 + stat_compare_means(label = 'p.format')
@@ -207,7 +207,7 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'me
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'med'), method ="kruskal.test")
 
 p2 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'med'), x = "class", y = "value",
-                 palette = "jco", xlab = '', ylab = 'Stratification duration',fill = c(col.pre, col.post),
+                 palette = "jco", xlab = '', ylab = 'Stratification duration (days)',fill = c(col.pre, col.post),
                  add = "jitter")
 #  Add p-value
 p2 = p2 + stat_compare_means(label = 'p.format');p2
@@ -216,7 +216,7 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Jz
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Jz'), method ="kruskal.test")
 
 p3 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'Jz'), x = "class", y = "value",
-                 palette = "jco", xlab = '', ylab = 'Total oxygen sink',fill = c(col.pre, col.post),
+                 palette = "jco", xlab = '', ylab = 'Total oxygen sink (mg/L)',fill = c(col.pre, col.post),
                  add = "jitter")
 #  Add p-value
 p3 = p3 + stat_compare_means(label = 'p.format')
@@ -230,7 +230,7 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Da
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Days.0.5.mg.L'), method ="kruskal.test")
 
 p4 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'Days.0.5.mg.L'), x = "class", y = "value",
-                 palette = "jco", xlab = '', ylab = 'Biomass over 0.5 mg/L',fill = c(col.pre, col.post),
+                 palette = "jco", xlab = '', ylab = 'Biomass over 0.5 mg/L (days)',fill = c(col.pre, col.post),
                  add = "jitter")
 #  Add p-value
 p4 = p4 + stat_compare_means(label = 'p.format')
@@ -254,7 +254,7 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Cl
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Clearwater.Duration'), method ="kruskal.test")
 
 p6 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'Clearwater.Duration'), x = "class", y = "value",
-                 palette = "jco", xlab = '', ylab = 'Clearwater duration',fill = c(col.pre, col.post),
+                 palette = "jco", xlab = '', ylab = 'Clearwater duration (days)',fill = c(col.pre, col.post),
                  add = "jitter")
 #  Add p-value
 p6 = p6 + stat_compare_means(label = 'p.format')
@@ -277,7 +277,7 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'PO
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'PO4.P_surf'), method ="kruskal.test")
 
 p8 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'PO4.P_surf'), x = "class", y = "value",
-                 palette = "jco", xlab = '', ylab = 'SRP surf',fill = c(col.pre, col.post),
+                 palette = "jco", xlab = '', ylab = 'SRP surf (mg/L)',fill = c(col.pre, col.post),
                  add = "jitter")
 #  Add p-value
 p8 = p8 + stat_compare_means(label = 'p.format')
@@ -286,7 +286,7 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'NO
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'NO3.NO2.N_surf'), method ="kruskal.test")
 
 p9 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'NO3.NO2.N_surf'), x = "class", y = "value",
-                 palette = "jco", xlab = '', ylab = 'NO3-NO2-N surf',fill = c(col.pre, col.post),
+                 palette = "jco", xlab = '', ylab = 'NO3-NO2-N surf (mg/L)',fill = c(col.pre, col.post),
                  add = "jitter")
 #  Add p-value
 p9 = p9 + stat_compare_means(label = 'p.format')
@@ -295,7 +295,7 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'RS
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'RSi'), method ="kruskal.test")
 
 p10 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'RSi'), x = "class", y = "value",
-                 palette = "jco", xlab = '', ylab = 'RSi', fill = c(col.pre, col.post),
+                 palette = "jco", xlab = '', ylab = 'RSi (mg/L)', fill = c(col.pre, col.post),
                  add = "jitter")
 #  Add p-value
 p10 = p10 + stat_compare_means(label = 'p.format')
@@ -305,7 +305,7 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Sp
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Spiny'), method ="kruskal.test")
 
 p11 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'Spiny'), x = "class", y = "value",
-                  palette = "jco", xlab = '', ylab = 'Spiny', fill = c(col.pre, col.post),
+                  palette = "jco", xlab = '', ylab = 'Spiny (counts)', fill = c(col.pre, col.post),
                   add = "jitter")
 #  Add p-value
 p11 = p11 + stat_compare_means(label = 'p.format')

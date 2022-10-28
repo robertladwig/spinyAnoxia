@@ -92,11 +92,11 @@ g11 = plotG(df, 'pH', 'pH')
 g12 = plotG(df, 'PO4.P_surf', 'SRP (mg/L)') +
   geom_line(aes(year, PO4.P_bot), linetype = 'dashed', size = 0.3) +
   geom_point(aes(year, PO4.P_bot), size = 1)
-g13 = plotG(df, 'NO3.NO2.N_surf', 'Nitrate (mg/L)') +
+g13 = plotG(df, 'NO3.NO2.N_surf', 'NO3-NO2-N (mg/L)') +
   geom_line(aes(year, NO3.NO2.N_bot ), linetype = 'dashed', size = 0.3) +
   geom_point(aes(year, NO3.NO2.N_bot), size = 1)
 g14 = plotG(df, 'RSi', 'React. Silica (mg/L)')
-g15 = plotG(df, 'Spiny', 'Spiny Waterflea (?)')
+g15 = plotG(df, 'Spiny', 'Spiny Waterflea (counts)')
 
 g6 = plotG(df, 'linear','Days Stratified') +
   geom_ribbon(aes(x = year, ymin = constant.low, ymax = constant.high), fill = 'grey80') +
