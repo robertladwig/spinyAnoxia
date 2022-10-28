@@ -1,5 +1,4 @@
-setwd(dirname(rstudioapi::getSourceEditorContext()$path))
-
+# Load libraries
 library(tidyverse)
 library(timeSeries)
 library(statcomp)
@@ -16,24 +15,17 @@ library(relaimpo)
 library(corrplot)
 library(RColorBrewer)
 
+# Load Files
+strat <- read_csv('data_processed/stratification.csv')
+anoxic <- read_csv("data_processed/anoxicfactor.csv")
+fluxes <- read_csv('data_processed/dosinks.csv')
+biomass <- read_csv('data_processed/biomass_duration.csv')
+discharge <- read_csv('data_processed/discharge.csv')
+cw <- readRDS('data_processed/yearly_clearwater_stats.rds')
+nutrients <- read_csv('data_processed/nutrients.csv')
+spiny <- read_csv('data_processed/spiny.csv')
 
-strat <- read_csv('../data_processed/stratification.csv')
-
-anoxic <- read_csv("../data_processed/anoxicfactor.csv")
-
-fluxes <- read_csv('../data_processed/dosinks.csv')
-
-biomass <- read_csv('../data_processed/biomass_duration.csv')
-
-discharge <- read_csv('../data_processed/discharge.csv')
-
-cw <- readRDS('../data_processed/yearly_clearwater_stats.rds')
-
-nutrients <- read_csv('../data_processed/nutrients.csv')
-
-spiny <- read_csv('../data_processed/spiny.csv')
-
-
+# Define colors 
 col.pre <- "steelblue"
 col.post <- "orange3"
 
@@ -69,6 +61,7 @@ df.spiny <- spiny %>%
   dplyr::filter(year != 1995 & year != 2021) %>%
   rename(year = year, Spiny = mean)
 
+# Merge dataframes 
 df <- merge(df.strat, df.anoxic, by = 'year')
 df <- merge(df, df.flux, by = 'year')
 df <- merge(df, df.biomass, by = 'year')
@@ -77,114 +70,85 @@ df <- merge(df, df.cw, by = 'year')
 df <- merge(df, df.nutrients, by = 'year')
 df <- merge(df, df.spiny, by = 'year')
 
-str(df)
-head(df)
-
 
 cool.col <- c("#00AFBB", "#E7B800", "#FC4E07")
 
 
-g5 <- ggplot(df) +
-  geom_line(aes(year, AF)) +
-  geom_point(aes(year, AF)) +
-  ylab('Anoxic Factor (days per season)') + xlab('') +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme_bw(base_size = 8)
-g6 <- ggplot(df) +
+
+ 
+# g9 <- ggplot(df) +
+#   geom_ribbon(aes(x = year, ymin = min.discharge, ymax = discharge), fill = 'grey80') +
+#   geom_line(aes(year, discharge)) +
+#   geom_point(aes(year, discharge)) +
+#   ylab('Yahara Q (cfs)') + xlab('') +
+#   geom_vline(xintercept=2010, linetype = 'dashed') +
+#   theme_bw(base_size = 8); 
+
+plotG <- function(df, var, ylabs) {
+  g1 = ggplot(df) +
+    geom_line(aes_string('year', var), size = 0.3) +
+    geom_point(aes_string('year', var), size = 1) +
+    ylab(ylabs) + xlab('') +
+    geom_vline(xintercept=2010, linetype = 'dashed') +
+    theme_bw(base_size = 8) +
+    theme(axis.title.x = element_blank())
+  return(g1)
+}
+
+g5 = plotG(df, 'AF', 'Anoxic Factor (days)')
+g8 = plotG(df, 'Days.0.5.mg.L', 'Biomass > 0.5 mg/L (days)')
+g10 = plotG(df, 'Clearwater.Duration', 'CWP (days)')
+g11 = plotG(df, 'pH', 'pH')
+g12 = plotG(df, 'PO4.P_surf', 'SRP (mg/L)') +
+  geom_line(aes(year, PO4.P_bot), linetype = 'dashed', size = 0.3) +
+  geom_point(aes(year, PO4.P_bot), size = 1)
+g13 = plotG(df, 'NO3.NO2.N_surf', 'Nitrate (mg/L)') +
+  geom_line(aes(year, NO3.NO2.N_bot ), linetype = 'dashed', size = 0.3) +
+  geom_point(aes(year, NO3.NO2.N_bot), size = 1)
+g14 = plotG(df, 'RSi', 'React. Silica (mg/L)')
+g15 = plotG(df, 'Spiny', 'Spiny Waterflea (?)')
+
+g6 = plotG(df, 'linear','Days Stratified') +
   geom_ribbon(aes(x = year, ymin = constant.low, ymax = constant.high), fill = 'grey80') +
-  geom_line(aes(x = year, y = linear)) +
-  geom_point(aes(x = year, y = linear)) +
-  geom_line(aes(x = year, y = spline), linetype = 2, color = 'red3') +
-  ylab('Stratification Duration (days)') + xlab('') +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme_bw(base_size = 8)
-g7 <- ggplot(df, aes(year, Jz, col = 'Volumetric'), col = cool.col[1]) +
-  geom_line(aes(year, Jv, col = 'Volumetric'), col = cool.col[1]) +
-  # geom_line(aes(year, Jz, col = 'Median Flux')) +
-  geom_point(aes(year, Jv, col = 'Volumetric'), col = cool.col[1]) +
-  # geom_point(aes(year, Jz, col = 'Median Flux')) +
-  geom_smooth(method = "loess", size = 1.5, col = cool.col[1]) +
-  geom_line(aes(year, Ja , col = 'Areal'), col = cool.col[2]) +
-  geom_point(aes(year, Ja , col = 'Areal'), col = cool.col[2]) +
-  geom_smooth(aes(year, Ja , col = 'Areal'), method = "loess", size = 1.5, col = cool.col[2]) +
-  scale_y_continuous(sec.axis = sec_axis(~.*1, name = expression("Areal flux ["*g~m^{-2}*d^{-1}*"]"))) +
-  ylab(expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")) + xlab('') +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme_bw(base_size = 8)+
-  theme(axis.line.y.right = element_line(color = cool.col[2]),
-        axis.ticks.y.right = element_line(color =cool.col[2]),
-        axis.text.y.right = element_text(color = cool.col[2]),
-        axis.title.y.right = element_text(color = cool.col[2]),
-        axis.line.y.left = element_line(color = cool.col[1]),
-        axis.ticks.y.left = element_line(color = cool.col[1]),
-        axis.text.y.left = element_text(color = cool.col[1]),
-        axis.title.y.left = element_text(color = cool.col[1]),
-        legend.position = "none"
-  )
-g8 <- ggplot(df) +
-  geom_line(aes(year, Days.0.5.mg.L)) +
-  geom_point(aes(year, Days.0.5.mg.L)) +
+  geom_line(aes(x = year, y = linear), size = 0.3) +
+  geom_point(aes(x = year, y = linear), size = 1) +
+  geom_line(aes(x = year, y = spline), linetype = 2, color = 'red3', size = 0.3)
 
-  ylab('Biomass over 0.5 mg/L (days per year)') + xlab('') +
-  theme_bw(base_size = 8)+
-  theme(legend.position="bottom") +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme(legend.title=element_blank())
-
-g9 <- ggplot(df) +
-  geom_ribbon(aes(x = year, ymin = min.discharge, ymax = discharge), fill = 'grey80') +
-  geom_line(aes(year, discharge)) +
-  geom_point(aes(year, discharge)) +
-  ylab('Yahara Q (cfs)') + xlab('') +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme_bw(base_size = 8); 
-g10 <- ggplot(df) +
-  geom_line(aes(year, Clearwater.Duration)) +
-  geom_point(aes(year, Clearwater.Duration)) +
-  ylab('Clearwater dur. (days)') + xlab('') +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme_bw(base_size = 8); 
-g11 <- ggplot(df) +
-  geom_line(aes(year, pH)) +
-  geom_point(aes(year, pH)) +
-  ylab('pH (-)') + xlab('') +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme_bw(base_size = 8); 
-g12 <- ggplot(df) +
-  geom_line(aes(year, PO4.P_surf ), linetype = 'solid') +
-  geom_point(aes(year, PO4.P_surf )) +
-  geom_line(aes(year, PO4.P_bot), linetype = 'dashed') +
-  geom_point(aes(year, PO4.P_bot)) +
-  ylab('Phosphate (mg/L)') + xlab('') +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme_bw(base_size = 8); 
-g13 <- ggplot(df) +
-  geom_line(aes(year, NO3.NO2.N_surf), linetype = 'solid') +
-  geom_point(aes(year, NO3.NO2.N_surf)) +
-  geom_line(aes(year, NO3.NO2.N_bot ), linetype = 'dashed') +
-  geom_point(aes(year, NO3.NO2.N_bot)) +
-  ylab('Nitrate (mg/L)') + xlab('') +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme_bw(base_size = 8); 
-g14 <- ggplot(df) +
-  geom_line(aes(year, RSi)) +
-  geom_point(aes(year, RSi)) +
-  ylab('React. Silica (mg/L)') + xlab('') +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme_bw(base_size = 8); 
-g15 <- ggplot(df) +
-  geom_line(aes(year, Spiny)) +
-  geom_point(aes(year, Spiny)) +
-  ylab('Spiny Waterflea (?)') + xlab('') +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  theme_bw(base_size = 8); 
-
-
-
-
-
-
-
+g7 = plotG(df, 'Jz', 'Vol. & Areal Fluxes' ) + #expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")
+  geom_smooth(aes(year, Jz, col = 'black'), method = "loess", size = 0.3, alpha = 0.2) +
+  geom_line(aes(year, Ja , col = 'gold'), size = 0.3) +
+  geom_point(aes(year, Ja , col = 'gold'), size = 1) +
+  geom_smooth(aes(year, Ja , col = 'gold'), method = "loess", size = 0.3, alpha = 0.2) +
+  scale_color_identity(guide = "legend", labels = c('Vol.','Areal')) +
+  theme(legend.position = c(0.2,0.9),
+        legend.text = element_text(size = 6),
+        legend.title = element_blank(), 
+        legend.background = element_rect(fill = "transparent"),
+        legend.key.height = unit(0.1, 'cm'))
+# 
+# ggplot(df, aes(year, Jz, col = 'Volumetric'), col = cool.col[1]) +
+#   geom_line(aes(year, Jv, col = 'Volumetric'), col = cool.col[1]) +
+#   # geom_line(aes(year, Jz, col = 'Median Flux')) +
+#   geom_point(aes(year, Jv, col = 'Volumetric'), col = cool.col[1]) +
+#   # geom_point(aes(year, Jz, col = 'Median Flux')) +
+#   geom_smooth(method = "loess", size = 1.5, col = cool.col[1]) +
+#   geom_line(aes(year, Ja , col = 'Areal'), col = cool.col[2]) +
+#   geom_point(aes(year, Ja , col = 'Areal'), col = cool.col[2]) +
+#   geom_smooth(aes(year, Ja , col = 'Areal'), method = "loess", size = 1.5, col = cool.col[2]) +
+#   scale_y_continuous(sec.axis = sec_axis(~.*1, name = expression("Areal flux ["*g~m^{-2}*d^{-1}*"]"))) +
+#   ylab(expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")) + xlab('') +
+#   geom_vline(xintercept=2010, linetype = 'dashed') +
+#   theme_bw(base_size = 8)+
+#   theme(axis.line.y.right = element_line(color = cool.col[2]),
+#         axis.ticks.y.right = element_line(color =cool.col[2]),
+#         axis.text.y.right = element_text(color = cool.col[2]),
+#         axis.title.y.right = element_text(color = cool.col[2]),
+#         axis.line.y.left = element_line(color = cool.col[1]),
+#         axis.ticks.y.left = element_line(color = cool.col[1]),
+#         axis.text.y.left = element_text(color = cool.col[1]),
+#         axis.title.y.left = element_text(color = cool.col[1]),
+#         legend.position = "none"
+#   )
 
 library(ggpubr)
 df.prior = df %>%
@@ -196,26 +160,30 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'AF'), method ="kruskal.test")
 
 
-plotBP <- function(var, ylab) {
-  p1 <- ggboxplot(m.df.prior %>% dplyr::filter(variable ==var), x = "class", y = "value",
-                  palette = "jco", xlab = '', ylab = ylab, fill = c(col.pre, col.post),
-                  add = "jitter", size = 0.2, add.params = list(size = 0.8))
+plotBP <- function(var, ylabs) {
+  p1 <- ggboxplot(data = m.df.prior %>% dplyr::filter(variable == var), x = "class", y = "value",
+                  xlab = '', ylab = ylabs, fill = 'class', palette = c(col.pre, col.post), #palette = "jco", 
+                  add = "jitter", size = 0.2, add.params = list(size = 0.8)) +
+    scale_y_continuous(expand = expansion(mult = c(0.05,0.2))) +
+    scale_x_discrete(labels = c('< 2010', '> 2010'))
   #  Add p-value
-  p1 = p1 + stat_compare_means(label = 'p.format', size = 2, vjust = 0.2) + 
-    theme_classic(base_size = 8) 
+  p1 = p1 + stat_compare_means(label = 'p.format', size = 2, vjust = -1) + 
+    theme_classic(base_size = 8) +
+    theme(legend.position = 'none',
+          axis.title.x = element_blank())
   return(p1)
 }
+plotBP('AF','Anoxic Factor')
 
 p1 = plotBP('AF','Anoxic Factor')
-p2 = plotBP('med', 'Stratification Duration')
+p2 = plotBP('med', 'Days Stratified')
 p3 = plotBP('Jz', 'Total oxygen sink')
-p4 = plotBP('Days.0.5.mg.L', 'Biomass over 0.5 mg/L')
-p6 = plotBP('Clearwater.Duration', 'Clearwater Duration')
+p4 = plotBP('Days.0.5.mg.L', 'Biomass > 0.5 mg/L')
+p6 = plotBP('Clearwater.Duration', 'CWP')
 p8 = plotBP('PO4.P_surf', 'SRP surf')
 p9 = plotBP('NO3.NO2.N_surf', 'NO3-NO2-N surf')
-p11 = plotBP('Spiny', 'Spiny')
-  
-# Change method
+p11 = plotBP('Spiny', 'Spiny Waterflea')
+p10 = plotBP('RSi', 'RSi')
 
 # 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'med'))
@@ -266,19 +234,11 @@ p11 = plotBP('Spiny', 'Spiny')
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'PO4.P_surf'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'PO4.P_surf'), method ="kruskal.test")
 # 
-# 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'NO3.NO2.N_surf'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'NO3.NO2.N_surf'), method ="kruskal.test")
 # 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'RSi'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'RSi'), method ="kruskal.test")
-# 
-# p10 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'RSi'), x = "class", y = "value",
-#                  palette = "jco", xlab = '', ylab = 'RSi', fill = c(col.pre, col.post),
-#                  add = "jitter")
-# #  Add p-value
-# p10 = p10 + stat_compare_means(label = 'p.format') + theme_bw(base_size = 8)
-# 
 # 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Spiny'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Spiny'), method ="kruskal.test")
@@ -292,7 +252,6 @@ library(strucchange)
 library(xts)
 
 ts.af =  ts(df$AF, start= 1996, frequency = 1)
-
 plot(ts.af)
 
 plot(merge(
@@ -340,34 +299,25 @@ par(opar)
 brekpn <- data.frame('year' = df$year,
                      'order' = as.numeric(ts(predict(fm1.nile),start=1996,freq=1)))
 
-g5 <- ggplot(df) +
-  geom_line(aes(year, AF)) +
-  geom_point(aes(year, AF)) +
-  ylab('Anoxic Factor (days per season)') + xlab('') +
-  geom_hline(yintercept=mean(AF), col = col.pre) +
-  geom_vline(xintercept=2010, linetype = 'dashed') +
-  geom_line(data = brekpn, aes(year, order), col = col.post) +
-  theme_bw(base_size = 8); g5
+# Update g5 with breakpoints
+g5 <- plotG(df, 'AF', 'Anoxic Factor (days)') +
+  geom_vline(xintercept = 2010, linetype = 'dashed', size = 0.4) +
+  geom_line(data = brekpn, aes(year, order), col = col.post, size = 0.4)
 
-plt1 <- (g5 / g6 / g7  / g10 /g8  /g12 /g13/ g14 ) 
-plt2 <-  (p1 / p2 /p3 /p6 /p4  / p8  / p9 /p10)
+plt1 <- (g5 + ggtitle("A)") + p1) + plot_layout(widths = c(2, 1)) #anoxic
+plt2 <- (g6 + ggtitle("F)")+ p2) + plot_layout(widths = c(2, 1)) # strat
+plt3 <- (g7 + ggtitle("C)")+ p3) + plot_layout(widths = c(2, 1)) # do flux
+plt4 <- (g10 + ggtitle("E)")+ p6) + plot_layout(widths = c(2, 1)) # clear
+plt5 <- (g8 + ggtitle("D)")+ p4) + plot_layout(widths = c(2, 1)) # biomass
+plt6 <- (g12 + ggtitle("G)")+ p8) + plot_layout(widths = c(2, 1)) # P
+plt7 <- (g13 + ggtitle("H)")+ p9) + plot_layout(widths = c(2, 1)) # N
+# plt8 <- (g14 + ggtitle("I)")+ p10) + plot_layout(widths = c(2, 1)) # Si
+plt9 <- (g15 + ggtitle("B)")+ p11) + plot_layout(widths = c(2, 1)) # spiny
+# plt10 <- (g11 + ggtitle("J)")+ p7) + plot_layout(widths = c(2, 1)) # pH
 
-plt1 | plt2 +plot_layout(guides = 'collect',widths = c(500, 1))
+# Final figure
+fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt4 | plt2) / (plt6 | plt7) &
+  theme(plot.title = element_text(size = 7, face = "bold"))
 
-plt1 <- (g5 + ggtitle("A") +p1)  + plot_layout(guides = 'collect',widths = c(2, 1)) #anoxic
-plt2 <- (g6 + ggtitle("F")+ p2)  + plot_layout(guides = 'collect',widths = c(2, 1)) # strat
-plt3 <- (g7 + ggtitle("C")+ p3)  + plot_layout(guides = 'collect',widths = c(2, 1)) # do flux
-plt4 <- (g10 + ggtitle("E")+ p6)  + plot_layout(guides = 'collect',widths = c(2, 1)) # clear
-plt5 <- (g8 + ggtitle("D")+ p4)  + plot_layout(guides = 'collect',widths = c(2, 1)) # biomass
-plt6 <- (g12 + ggtitle("G")+ p8)  + plot_layout(guides = 'collect',widths = c(2, 1)) # P
-plt7 <- (g13 + ggtitle("H")+ p9)  + plot_layout(guides = 'collect',widths = c(2, 1)) # N
-# plt8 <- (g14 + ggtitle("I")+ p10) + plot_layout(guides = 'collect',widths = c(2, 1)) # Si
-plt9 <- (g15 + ggtitle("B")+ p11) + plot_layout(guides = 'collect',widths = c(2, 1)) # spiny
-# plt10 <- (g11 + ggtitle("J")+ p7) + plot_layout(guides = 'collect',widths = c(2, 1)) # pH
-
-
-
-fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt4 | plt2) / (plt6 | plt7) ; fig.plt
-
-ggsave(plot = fig.plt , '../figs_publication/Fig1a.png', dpi = 300, units = 'in', width = 6.5, height = 6)
+ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 300, units = 'in', width = 6.5, height = 6)
 
