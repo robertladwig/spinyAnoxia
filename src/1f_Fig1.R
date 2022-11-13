@@ -23,7 +23,7 @@ anoxic <- read_csv("../data_processed/anoxicfactor.csv")
 
 fluxes <- read_csv('../data_processed/dosinks.csv')
 
-biomass <- read_csv('../data_processed/biomass_duration.csv')
+biomass <- read_csv('../data_processed/3c_biomass_duration.csv')
 
 discharge <- read_csv('../data_processed/discharge.csv')
 
