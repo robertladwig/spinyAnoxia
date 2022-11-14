@@ -4,7 +4,7 @@
 
 library("lubridate")
 
-ice <- readRDS("data_input/LTER_Mendota_ice_knb-lter-ntl.33.35.rds")
+ice <- readRDS("data_input/0b_ice_knb-lter-ntl.33.35.rds")
 
 # ---- reformat ----
 

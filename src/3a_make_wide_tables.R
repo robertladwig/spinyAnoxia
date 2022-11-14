@@ -6,7 +6,7 @@
 library(tidyr)
 library(lubridate)
 
-phyto <- readRDS(file = "data_input/LTER_Mendota_phyto_knb-lter-ntl.88.30.rds")
+phyto <- readRDS(file = "data_input/0a_phyto_knb-lter-ntl.88.30.rds")
 
 created.file <- "data_processed/3a_phyto_list.rds"
 

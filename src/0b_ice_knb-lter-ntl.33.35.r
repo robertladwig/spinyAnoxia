@@ -4,7 +4,7 @@
 # save as rds in my data folder
 # https://portal.edirepository.org/nis/codeGeneration?packageId=knb-lter-ntl.33.35&statisticalFileType=r
 
-my.format.rds <- "data_input/LTER_Mendota_ice_knb-lter-ntl.33.35.rds"
+my.format.rds <- "data_input/0b_ice_knb-lter-ntl.33.35.rds"
 
 # ---- EDI download script ----
 

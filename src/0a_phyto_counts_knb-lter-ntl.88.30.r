@@ -168,6 +168,6 @@ men$lter.genus <- sub(pattern = " $", "", men$lter.genus)
 men$lter.division <- sub(pattern = " $", "", men$lter.division)
 # ---- export ----
 
-saveRDS(object = men, file = "data_input/LTER_Mendota_phyto_knb-lter-ntl.88.30.rds")
+saveRDS(object = men, file = "data_input/0a_phyto_knb-lter-ntl.88.30.rds")
 
 
