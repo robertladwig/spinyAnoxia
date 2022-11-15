@@ -1,13 +1,14 @@
 # RRR
 # look at NMDS plots as a way to summarize the community change seen in the bar plots
 
-phyto.list <- readRDS("robin-data/2022-06-08_phyto_list.rds")
-# key <- readRDS("robin-data/2022-07-25_season_dates/seasons_by_sample.rds")
-key <- readRDS("robin-data/2022-10-02_season_dates/seasons_by_sample.rds")
+phyto.list <- readRDS("data_processed/3a_phyto_list.rds")
+key <- readRDS("data_processed/4a_seasons_by_sample.rds")
 
 library(vegan)
 
-plot.folder <- "plots/2022-10-02_NMDS_plots/"
+plot.folder <- "figs/4c_NMDS_plots"
+anosim.stats.file <- "data_processed/4c_anosim_all_datapoints.csv"
+anosim.stats.file.2 <- "data_processed/4c_anosim_year_averages.csv"
 
 # ---- functions ----
 
@@ -115,7 +116,7 @@ anosim.all.datapoints[anosim.all.datapoints$Season == "fall", "anosim.significan
 
 dev.off()
 
-write.csv(x = anosim.all.datapoints, file = file.path(plot.folder, "anosim_all_datapoints.csv"), row.names = F)
+write.csv(x = anosim.all.datapoints, file = anosim.stats.file, row.names = F)
 
 # ---- averages for each year ----
 
@@ -143,4 +144,4 @@ anosim.year.averages[anosim.year.averages$Season == "fall", "anosim.significance
 
 dev.off()
 
-write.csv(x = anosim.year.averages, file = file.path(plot.folder, "anosim_year_averages.csv"), row.names = F)
+write.csv(x = anosim.year.averages, file = anosim.stats.file.2, row.names = F)

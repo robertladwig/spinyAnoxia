@@ -1,18 +1,21 @@
 # RRR
-# Figure 5
+# Figure 4
 
-# output.folder <- "plots/2022-08-11_taxa_composition_plot/"
-# output.folder <- "plots/2022-10-02_taxa_composition_plot/"
-output.folder <- "plots/2022-10-25_taxa_composition_plot"
+# ---- set-up ----
 
-# phyto.list <- readRDS("robin-data/2022-06-08_phyto_list.rds")
-phyto.table <- readRDS("robin-data/2022-10-25_phyto_division_table.rds")
-# key <- readRDS("robin-data/2022-07-25_season_dates/seasons_by_sample.rds")
-key <- readRDS("robin-data/2022-10-02_season_dates/seasons_by_sample.rds")
+phyto <- readRDS("data_processed/4e_phyto_division_table.rds")
+key <- readRDS("data_processed/4a_seasons_by_sample.rds")
 
-phyto <- phyto.table
+output.fig <- "figs_publication/Fig4.pdf"
 
-phyto[1:5,1:5]
+output.ice.stats <- "figs_publication/Fig4_ice.csv"
+output.spring.stats <- "figs_publication/Fig4_spring.csv"
+output.strat.stats <- "figs_publication/Fig4_stratified.csv"
+output.fall.stats <- "figs_publication/Fig4_fall.csv"
+
+output.taxon.stats <- "data_processed/4f_taxon_year_averages_mg_L-other_category.rds"
+
+# ----
 
 # Make division color key ----
 col.key <- data.frame("taxa" = row.names(phyto), "color" = rainbow(n = nrow(phyto)))
@@ -131,19 +134,17 @@ ice.av <- cbind(ice.av[ ,1:6],
 
 # ---- save data behind plot ----
 
-write.csv(x = ice.av, file = file.path(output.folder,"ice_yearly_av_taxa.csv"), quote = F, row.names = T)
-write.csv(x = spring.av, file = file.path(output.folder,"spring_yearly_av_taxa.csv"), quote = F, row.names = T)
-write.csv(x = stratified.av, file = file.path(output.folder,"stratified_yearly_av_taxa.csv"), quote = F, row.names = T)
-write.csv(x = fall.av, file = file.path(output.folder,"fall_yearly_av_taxa.csv"), quote = F, row.names = T)
+write.csv(x = ice.av, file = output.ice.stats, quote = F, row.names = T)
+write.csv(x = spring.av, file = output.spring.stats, quote = F, row.names = T)
+write.csv(x = stratified.av, file = output.strat.stats, quote = F, row.names = T)
+write.csv(x = fall.av, file = output.fall.stats, quote = F, row.names = T)
 
-# saveRDS(object = list("ice" = ice.av, "spring" = spring.av, "stratified" = stratified.av, "fall" = fall.av), file = "robin-data/2022-09-28_phyto_stats_by_taxon/taxon_year_averages_mg_L.rds")
-# saveRDS(object = list("ice" = ice.av, "spring" = spring.av, "stratified" = stratified.av, "fall" = fall.av), file = "robin-data/2022-10-02_phyto_stats_by_taxon/taxon_year_averages_mg_L.rds")
-saveRDS(object = list("ice" = ice.av, "spring" = spring.av, "stratified" = stratified.av, "fall" = fall.av), file = "robin-data/2022-10-02_phyto_stats_by_taxon/taxon_year_averages_mg_L-other_category.rds")
+saveRDS(object = list("ice" = ice.av, "spring" = spring.av, "stratified" = stratified.av, "fall" = fall.av), file = output.taxon.stats)
 
 
 # ---- make a prettier plot ----
 
-pdf(file = file.path(output.folder,"season_barplot.pdf"), width = 6.5, height = 5)
+pdf(file = output.fig, width = 6.5, height = 5)
 
 par(mar = c(.75,2,.25,0), oma = c(0,0,0,0))
 

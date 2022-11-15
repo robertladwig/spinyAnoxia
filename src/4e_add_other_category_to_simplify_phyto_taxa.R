@@ -3,7 +3,11 @@
 # keep: Bacillariophyta, Cyanophyta, Chlorophyta, Pyrrhophyta, Cryptophyta, Chrysophyta
 # other: Miscellaneous, Xanthophyta, Euglenophyta, Haptophyta
 
-phyto.list <- readRDS("robin-data/2022-06-08_phyto_list.rds")
+phyto.list <- readRDS("data_processed/3a_phyto_list.rds")
+
+created.file <- "data_processed/4e_phyto_division_table.rds"
+
+# ----
 
 phyto <- phyto.list$div
 
@@ -21,4 +25,4 @@ row.names(phyto) <- phyto$Division
 
 phyto <- as.matrix(phyto[ ,-1])
 
-saveRDS(object = phyto, file = "robin-data/2022-10-25_phyto_division_table.rds")
+saveRDS(object = phyto, file = created.file)

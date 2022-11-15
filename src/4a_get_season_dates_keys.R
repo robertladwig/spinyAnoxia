@@ -1,23 +1,25 @@
 # RRR
 # get season key for sample dates
-# 
+
 
 # ---- Import data and remind self of format ----
 
 library(lubridate)
 
-# strat.dates <- readRDS("robin-data/2022-06-23_stratification_dates.rds")
-strat.dates <- readRDS("robin-data/2022-10-02_stratification_dates.rds")
+strat.dates <- readRDS("data_processed/3g_stratification_dates.rds")
 head(strat.dates$mean)
 strat.dates$mean$start # yday (and fractional)
 
-ice.dates <- readRDS("data/2-ice_seasons_split_by_year.rds")
+ice.dates <- readRDS("data_processed/0c_ice_seasons_split_by_year.rds")
 head(ice.dates)
 ice.dates$Spring.Ice.On # GMT-5
 
-phyto.list <- readRDS("robin-data/2022-06-08_phyto_list.rds")
+phyto.list <- readRDS("data_processed/3a_phyto_list.rds")
 names(phyto.list)
 phyto.list$tot$date # UTC
+
+save.samply <- "data_processed/4a_seasons_by_sample.rds"
+save.yearly <- "data_processed/4a_seasons_by_year.rds"
 
 # ---- combine ice and stratification info ----
 
@@ -76,8 +78,5 @@ sample.dates <- rbind(missing.dates, sample.dates)
 
 # ---- save data ----
 
-# saveRDS(object = sample.dates, file = "robin-data/2022-07-25_season_dates/seasons_by_sample.rds")
-# saveRDS(object = season.dates, file = "robin-data/2022-07-25_season_dates/seasons_by_year.rds")
-
-saveRDS(object = sample.dates, file = "robin-data/2022-10-02_season_dates/seasons_by_sample.rds")
-saveRDS(object = season.dates, file = "robin-data/2022-10-02_season_dates/seasons_by_year.rds")
+saveRDS(object = sample.dates, file = save.samply)
+saveRDS(object = season.dates, file = save.yearly)

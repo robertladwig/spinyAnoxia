@@ -1,12 +1,18 @@
 # RRR
 # look at biomass taxa individually over time
 
+# ---- set-up ----
+
 library(lubridate)
 
-phyto.list <- readRDS("robin-data/2022-06-08_phyto_list.rds")
+phyto.list <- readRDS("data_processed/3a_phyto_list.rds")
 names(phyto.list)
 
-key <- readRDS("robin-data/2022-07-25_season_dates/seasons_by_sample.rds")
+key <- readRDS("data_processed/4a_seasons_by_sample.rds")
+
+plot.folder <- "figs/4b_phyto_taxa_over_time/"
+
+# ---- prep data ----
 
 my.dates <- phyto.list$tot$date
 index.pre <- year(my.dates) < 2010
@@ -23,19 +29,21 @@ index <- seq.int(from = 1, by = 5, length.out = 6)
 x.ax.lab.loc <- x.ax.ticks[index]
 x.ax.lab <- x.ax[index]
 
-t = 2
-r = 1
 
-# manually add total plot - diff structure
+# ---- manually add total plot - diff structure ----
 t = 1
-folder.name <- paste0("plots/2022-07-25_taxa_over_time_plots/",t,"-",names(phyto.list)[t])
+folder.name <- file.path(plot.folder, paste0(t,"-",names(phyto.list)[t]))
+cat(folder.name)
+dir.create(folder.name, showWarnings = F)
 my.tax <- phyto.list[[t]]$biomass
 my.name <- "Total"
 # and run the figure part of the loop only
 
 
-for (t in 2:length(phyto.list)){
-  folder.name <- paste0("plots/2022-07-25_taxa_over_time_plots/",t,"-",names(phyto.list)[t])
+# for (t in 2:length(phyto.list)){
+for (t in 2:2){ # don't generate quite so many plots for the public repo, can make them later if want to see species-level
+  folder.name <- file.path(plot.folder, paste0(t,"-",names(phyto.list)[t]))
+  dir.create(folder.name, showWarnings = F)
   for (r in 1:nrow(phyto.list[[t]])){
     my.tax <- phyto.list[[t]][r, ]
     my.name <- row.names(phyto.list[[t]])[r]
@@ -43,7 +51,7 @@ for (t in 2:length(phyto.list)){
     
     
     # ----
-    pdf(file = file.path(folder.name,paste0(my.name,".pdf")), width = 7.5, height = 10)
+    pdf(file = file.path(folder.name, paste0(my.name,".pdf")), width = 7.5, height = 10)
     
     # all dates
     par(fig = c(0,.8,.8,1)) 

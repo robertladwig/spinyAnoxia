@@ -1,14 +1,14 @@
 library(vegan)
 library(lubridate)
 
-phyto.list <- readRDS("robin-data/2022-06-08_phyto_list.rds")
-# key <- readRDS("robin-data/2022-07-25_season_dates/seasons_by_sample.rds")
-key <- readRDS("robin-data/2022-10-02_season_dates/seasons_by_sample.rds")
+phyto.list <- readRDS("data_processed/3a_phyto_list.rds")
+key <- readRDS("data_processed/4a_seasons_by_sample.rds")
 
-# plot.folder <- "plots/2022-08-02_diversity_plots/"
-plot.folder <- "plots/2022-10-02_diversity_plots/"
+plot.folder <- "figs/4d_diversity_plots/"
 
-data.folder <- "robin-data/2022-10-02_diversity_metrics/"
+file.diversity.by.sample <- "data_processed/4d_diversity_by_sample.rds"
+file.diversity.by.year.rds <- "data_processed/4d_diversity_by_year.rds"
+file.diversity.by.invasion <- "data_processed/4d_diversity_by_invasion.rds"
 
 phyto.list$div[is.na(phyto.list$div)] <- 0
 phyto.list$gen[is.na(phyto.list$gen)] <- 0
@@ -48,9 +48,7 @@ diversity.table$taxon.richness <- colSums(pres.abs)
 
 head(diversity.table)
 
-my.file <- file.path(data.folder,"diversity_by_sample.rds")
-cat(my.file)
-saveRDS(object = diversity.table, file = my.file)
+saveRDS(object = diversity.table, file = file.diversity.by.sample)
 
 # ---- get diversity year averages ----
 
@@ -71,9 +69,7 @@ for (yr in unique(diversity.by.year$Year)){
 }
 head(diversity.by.year)
 
-my.file <- file.path(data.folder,"diversity_by_year.rds")
-cat(my.file)
-saveRDS(object = diversity.by.year, file = my.file)
+saveRDS(object = diversity.by.year, file = file.diversity.by.year.rds)
 
 
 # ---- get diversity invasion-group averages ----
@@ -99,9 +95,7 @@ for (s in names(diversity.pvals)){
   }
 }
 
-my.file <- file.path(data.folder,"diversity_by_invasion.rds")
-cat(my.file)
-saveRDS(object = diversity.pvals, file = my.file)
+saveRDS(object = diversity.pvals, file = file.diversity.by.invasion)
 
 # look at diversity over time ----
 
