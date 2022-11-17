@@ -9,4 +9,4 @@ See also the data release at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo
 
 The figures are located under /figs_publications.
 
-<a href="url"><img src="figs_publication/Fig0.png" width=40% height=40% ></a>
+<a href="url"><img src="figs_publication/Fig0.png" width=100% height=100% ></a>
