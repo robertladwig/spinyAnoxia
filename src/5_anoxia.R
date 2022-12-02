@@ -1,5 +1,6 @@
 library(tidyverse)
 library(scales)
+library(lubridate)
 
 # Load physical data
 inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/29/30/03e232a1b362900e0f059859abe8eb97"

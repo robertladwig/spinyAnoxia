@@ -16,7 +16,7 @@ library(corrplot)
 library(RColorBrewer)
 
 # Load Files
-strat <- read_csv('data_processed/stratification.csv')
+strat <- read_csv('data_processed/physical_timings.csv')
 anoxic <- read_csv("data_processed/anoxicfactor.csv")
 fluxes <- read_csv('data_processed/dosinks.csv')
 biomass <- read_csv('data_processed/3c_biomass_duration.csv')
@@ -29,10 +29,7 @@ spiny <- read_csv('data_processed/spiny.csv')
 col.pre <- "steelblue"
 col.post <- "orange3"
 
-df.strat <- strat %>%
-  group_by(year) %>%
-  mutate(med = mean(linear, constant.low, constant.high, spline)) %>%
-  dplyr::select(year, med, linear, constant.low, constant.high, spline)
+df.strat <- strat
 
 df.anoxic <- anoxic %>%
   dplyr::filter(year != 1995 & year != 2021) %>%
@@ -97,6 +94,7 @@ g13 = plotG(df, 'NO3.NO2.N_surf', 'NO3-NO2-N (mg/L)') +
   geom_point(aes(year, NO3.NO2.N_bot), size = 1)
 g14 = plotG(df, 'RSi', 'React. Silica (mg/L)')
 g15 = plotG(df, 'Spiny', 'Spiny Waterflea (counts)')
+g16 = plotG(df, 'ice_duration', 'Ice duration (days)')
 
 g6 = plotG(df, 'linear','Days Stratified') +
   geom_ribbon(aes(x = year, ymin = constant.low, ymax = constant.high), fill = 'grey80') +
@@ -119,7 +117,7 @@ g7 = plotG(df, 'Jz', 'Vol. & Areal Fluxes' ) + #expression("Volumetric flux ["*g
 library(ggpubr)
 df.prior = df %>%
   mutate('class' = ifelse(year < 2010, 'prior 2010','post 2010')) %>%
-  dplyr::select(class, AF, med, Jz, Jv, Days.0.5.mg.L, discharge, Clearwater.Duration, pH, PO4.P_surf, NO3.NO2.N_surf, RSi, Spiny)
+  dplyr::select(class, AF, strat_duration, Jz, Jv, Days.0.5.mg.L, discharge, ice_duration, Clearwater.Duration, pH, PO4.P_surf, NO3.NO2.N_surf, RSi, Spiny)
 m.df.prior <- reshape2::melt(df.prior, id = 'class')
 
 compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
@@ -150,6 +148,7 @@ p8 = plotBP('PO4.P_surf', 'SRP surf')
 p9 = plotBP('NO3.NO2.N_surf', 'NO3-NO2-N surf')
 p11 = plotBP('Spiny', 'Spiny Waterflea')
 p10 = plotBP('RSi', 'RSi')
+p11 = plotBP('ice_duration', 'Ice period')
 
 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'med'))
