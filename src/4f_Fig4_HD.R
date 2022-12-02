@@ -69,6 +69,7 @@ ggplot(phyto.join |> filter (depth_range == '0-8m', year4 > 1994)) +
   ylab("Mean Phytoplankton Biomass"~(mg~L^-1)) +
   theme_bw(base_size = 9) +
   theme(axis.title.x = element_blank(), 
-        strip.background=element_rect(fill="#f5e3b0"))
+        strip.background = element_blank(),
+        strip.text = element_text(size = 9, face = "bold", hjust = 0, margin = margin(0, 0, 0, 0, "pt")))
   
 ggsave('figs_publication/Fig4_HD.png', dpi = 500, units = 'in', width = 6.5, height = 5)
