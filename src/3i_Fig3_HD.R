@@ -1,9 +1,4 @@
-# RRR
-
-save.plot <- "figs_publication/Fig3.pdf" # season start == strat start, season start is 0.1 kg/m3, add panel labels
-save.data <- "figs_publication/Fig3_data.csv"
-save.stats <- "figs_publication/Fig3_stats.csv"
-
+# Alternative Figure 3 boxplot with points 
 anoxia <- read_csv(file = "data_processed/timelag.csv") |> 
   mutate(group = if_else(year < 2010, 'Pre','Post')) |> 
   mutate(group = factor(group, levels = c('Pre','Post')))
