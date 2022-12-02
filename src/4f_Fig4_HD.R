@@ -73,3 +73,32 @@ ggplot(phyto.join |> filter (depth_range == '0-8m', year4 > 1994)) +
         strip.text = element_text(size = 9, face = "bold", hjust = 0, margin = margin(0, 0, 0, 0, "pt")))
   
 ggsave('figs_publication/Fig4_HD.png', dpi = 500, units = 'in', width = 6.5, height = 5)
+
+
+# p3 = ggplot(phyto.join |> filter (depth_range == '0-8m', year4 > 1994)) +
+#   geom_col(aes(x = year4, y = biomass_conc, fill = division), width = 0.8) +
+#   geom_vline(aes(xintercept = 2009.5), linetype = 2) +
+#   scale_fill_manual(values = c('#9a713e', '#f1635c', '#4ea5d7', '#76b88a', '#ffa98f', '#c6eb55', 'grey50'), name = 'Division') +
+#   facet_wrap(~season, ncol = 2, labeller = as_labeller(season.names) ) +
+#   ylab("Mean Phytoplankton Biomass"~(mg~L^-1)) +
+#   theme_bw(base_size = 9) +
+#   theme(axis.title.x = element_blank(), 
+#         legend.position = 'bottom',
+#         strip.background = element_blank(),
+#         legend.key.size = unit(0.2, "cm"),
+#         strip.text = element_text(size = 9, face = "bold", hjust = 0, margin = margin(0, 0, 0, 0, "pt"))) +
+#   guides(fill = guide_legend(nrow = 1))
+# 
+# layout <- "
+# AAAB
+# AAAB
+# CCCC
+# CCCC
+# CCCC
+# "
+# 
+# p1 + p2 + p3 + plot_layout(design = layout) +
+#   plot_annotation(tag_levels = 'A', tag_suffix = ')') & 
+#   theme(plot.tag = element_text(size  = 8))
+# ggsave('figs_publication/Fig45_HD.png', dpi = 500, units = 'in', width = 6.5, height = 5.5)
+# 
