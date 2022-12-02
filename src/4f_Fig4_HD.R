@@ -28,6 +28,7 @@ try(download.file(inUrl1,infile1,method="curl"))
 
 phyto.df <- read_csv(infile1) |> 
   filter(lakeid == 'ME') |> 
+  filter(cells_per_ml > 0) |> 
   select(year4, sampledate, depth_range, division, biomass_conc) |> 
   mutate(division = if_else(division %in% c('Euglenophyta','Haptophyta','Miscellaneous','Xanthophyta'), 'other', division))
 
