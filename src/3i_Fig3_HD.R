@@ -36,7 +36,7 @@ p1 = ggplot(phyto) +
   scale_x_discrete(labels = c('Ice', 'Spring\nMixed','Stratified','Fall\nMixed')) +
   stat_pvalue_manual(phyto.stat, label = "{p.adj}{p.adj.signif}", hide.ns = TRUE, 
                      tip.length = 0.01, remove.bracket = FALSE, size = 2) +
-  scale_y_continuous(expand = expansion(mult = c(0.01, 0.1))) +
+  scale_y_continuous(expand = expansion(mult = c(0.03, 0.1))) +
   ylab("Phytoplankton Biomass"~(mg~L^-1)) +
   theme_bw(base_size = 9) +
   theme(axis.title.x = element_blank(), 
@@ -48,7 +48,7 @@ p2 = ggplot(anoxia) +
   geom_point(aes(x = group, y = timelag, fill = group), shape = 21, size = 2, position=position_dodge(width=0.75)) +
   scale_fill_manual(values = c('steelblue','orange3')) +
   stat_pvalue_manual(anoxia.stat, label = "{p}{p.signif}", tip.length = 0.01, remove.bracket = FALSE, size = 2) +
-  scale_y_continuous(expand = expansion(mult = c(0.01, 0.1))) +
+  scale_y_continuous(expand = expansion(mult = c(0.03, 0.1))) +
   ylab("Lag between stratfication \nand anoxia (days)") +
   theme_bw(base_size = 9) +
   theme(axis.title.x = element_blank(), 
