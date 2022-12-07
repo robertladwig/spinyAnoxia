@@ -123,6 +123,7 @@ df <- yahara.daily2 %>%
   summarise(discharge = mean(meanDischarge, na.rm = T),
             max.discharge = max(meanDischarge, na.rm = T),
             min.discharge = min(meanDischarge, na.rm = T),
+            sum.discharge = sum(meanDischarge, na.rm = T),
             precip = mean(sumPrecip, na.rm = T))
 
 ggplot(df, aes(year, max.discharge)) +

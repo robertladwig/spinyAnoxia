@@ -84,8 +84,8 @@ df.red <- df[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
                  "Jz" , "Jv" , "Ja" , 
                  "Days.0.5.mg.L" , "Days.1.mg.L" , "Days.1.5.mg.L" ,
                  "Days.2.mg.L" , "Days.3.mg.L" ,
-                 "discharge" , "max.discharge" , "min.discharge" ,
-                 "Clearwater.Duration" , "Prev.Winter.Duration" , "Max.Clearwater.Depth.m" , "Spiny" ,
+                 "sum.discharge" ,# "max.discharge" , "min.discharge" ,
+                 "Clearwater.Duration"  , "Max.Clearwater.Depth.m" , "Spiny" ,
                  "pH" , "PO4.P_surf", "PO4.P_bot", "NO3.NO2.N_surf", "NO3.NO2.N_bot", "RSi")]
 sc.info <- scale(df.red)
 df.data <- as.data.frame(scale(df.red))
@@ -152,6 +152,7 @@ pred.int <- pred.int * attr(sc.info, 'scaled:scale')[1] + attr(sc.info, 'scaled:
 
 mydata <- cbind(data.frame('AF'  = df$AF), pred.int)
 
+my.formula <- y ~ (x)
 # PLOT: linear model
 p <- ggplot(mydata, aes(fit, AF)) +
   stat_smooth(method = lm, col = 'black') +
@@ -186,7 +187,7 @@ res=cor(hyp.data2, method = c("pearson"))
 
 
 
-my.formula <- y ~ (x)
+
 
 
 g1 <- ggplot(df,aes(med, AF)) + 

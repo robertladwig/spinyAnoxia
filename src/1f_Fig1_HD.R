@@ -16,7 +16,7 @@ library(corrplot)
 library(RColorBrewer)
 
 # Load Files
-strat <- read_csv('data_processed/physical_timings.csv')
+strat <- read_csv('data_processed/stratification.csv')
 anoxic <- read_csv("data_processed/anoxicfactor.csv")
 fluxes <- read_csv('data_processed/dosinks.csv')
 biomass <- read_csv('data_processed/3c_biomass_duration.csv')
@@ -24,12 +24,14 @@ discharge <- read_csv('data_processed/discharge.csv')
 cw <- readRDS('data_processed/yearly_clearwater_stats.rds')
 nutrients <- read_csv('data_processed/nutrients.csv')
 spiny <- read_csv('data_processed/spiny.csv')
+physics <- read_csv('data_processed/physical_timings.csv')
 
 # Define colors 
 col.pre <- "steelblue"
 col.post <- "orange3"
 
 df.strat <- strat
+df.physics <- physics
 
 df.anoxic <- anoxic %>%
   dplyr::filter(year != 1995 & year != 2021) %>%
@@ -66,6 +68,7 @@ df <- merge(df, df.discharge, by = 'year')
 df <- merge(df, df.cw, by = 'year')
 df <- merge(df, df.nutrients, by = 'year')
 df <- merge(df, df.spiny, by = 'year')
+df <- merge(df, df.physics, by = 'year')
 
 # Define colors
 cool.col <- c("#00AFBB", "#E7B800", "#FC4E07")
@@ -82,7 +85,7 @@ plotG <- function(df, var, ylabs) {
   return(g1)
 }
 
-g5 = plotG(df, 'AF', 'Anoxic Factor (days)')
+g5 = plotG(df, 'AF', 'Anoxic factor (days)')
 g8 = plotG(df, 'Days.0.5.mg.L', 'Biomass > 0.5 mg/L (days)')
 g10 = plotG(df, 'Clearwater.Duration', 'CWP (days)')
 g11 = plotG(df, 'pH', 'pH')
@@ -93,7 +96,7 @@ g13 = plotG(df, 'NO3.NO2.N_surf', 'NO3-NO2-N (mg/L)') +
   geom_line(aes(year, NO3.NO2.N_bot ), linetype = 'dashed', size = 0.3) +
   geom_point(aes(year, NO3.NO2.N_bot), size = 1)
 g14 = plotG(df, 'RSi', 'React. Silica (mg/L)')
-g15 = plotG(df, 'Spiny', 'Spiny Waterflea (counts)')
+g15 = plotG(df, 'Spiny', 'Spiny water flea (counts)')
 g16 = plotG(df, 'ice_duration', 'Ice duration (days)')
 
 g6 = plotG(df, 'linear','Days Stratified') +
@@ -139,8 +142,8 @@ plotBP <- function(var, ylabs) {
 }
 
 
-p1 = plotBP('AF','Anoxic Factor')
-p2 = plotBP('med', 'Days Stratified')
+p1 = plotBP('AF','Anoxic factor')
+p2 = plotBP('strat_duration', 'Days Stratified')
 p3 = plotBP('Jz', 'Total oxygen sink')
 p4 = plotBP('Days.0.5.mg.L', 'Biomass > 0.5 mg/L')
 p6 = plotBP('Clearwater.Duration', 'CWP')
@@ -213,37 +216,37 @@ p11 = plotBP('ice_duration', 'Ice period')
 # find breaking point
 library(bfast)
 library(zoo)
-library(strucchange)
+# library(strucchange)
 library(xts)
 
 ts.af =  ts(df$AF, start= 1996, frequency = 1)
 plot(ts.af)
-
-plot(merge(
-       AF = as.zoo(ts.af),
-       zoo(mean(AF), time(AF)),
-       CUSUM = cumsum(AF - mean(AF)),
-       zoo(0, time(AF)),
-       MOSUM = rollapply(AF - mean(AF), 4, sum),
-       zoo(0, time(AF))
-     ), screen = c(1, 1, 2, 2, 3, 3), main = "", xlab = "Time",
-  col = c(1, 4, 1, 4, 1, 4) )
-
-plot(merge(
-        AF = as.zoo(ts.af),
-        zoo(c(NA, cumsum(head(AF, -1))/1:99), time(AF)),
-        CUSUM = cumsum(c(0, recresid(lm(AF ~ 1)))),
-        zoo(0, time(AF))
-      ), screen = c(1, 1, 2, 2), main = "", xlab = "Time",
-   col = c(1, 4, 1, 4) )
+# 
+# plot(merge(
+#        AF = as.zoo(ts.af),
+#        zoo(mean(AF), time(AF)),
+#        CUSUM = cumsum(AF - mean(AF)),
+#        zoo(0, time(AF)),
+#        MOSUM = rollapply(AF - mean(AF), 4, sum),
+#        zoo(0, time(AF))
+#      ), screen = c(1, 1, 2, 2, 3, 3), main = "", xlab = "Time",
+#   col = c(1, 4, 1, 4, 1, 4) )
+# 
+# plot(merge(
+#         AF = as.zoo(ts.af),
+#         zoo(c(NA, cumsum(head(AF, -1))/1:99), time(AF)),
+#         CUSUM = cumsum(c(0, recresid(lm(AF ~ 1)))),
+#         zoo(0, time(AF))
+#       ), screen = c(1, 1, 2, 2), main = "", xlab = "Time",
+#    col = c(1, 4, 1, 4) )
 
 AF = as.zoo(ts.af)
-plot(1996 + 4:25, sapply(4:25, function(i) {
-  before <- 1:i
-  after <- (i+1):4
-  res <- c(AF[before] - mean(AF[before]), AF[after] - mean(AF[after]))
-   sum(res^2)
-   }), type = "b", xlab = "Time", ylab = "RSS")
+# plot(1996 + 4:25, sapply(4:25, function(i) {
+#   before <- 1:i
+#   after <- (i+1):4
+#   res <- c(AF[before] - mean(AF[before]), AF[after] - mean(AF[after]))
+#    sum(res^2)
+#    }), type = "b", xlab = "Time", ylab = "RSS")
 
 bp.nile <- breakpoints(AF ~ 1)
 nile.fac <- breakfactor(bp.nile, breaks = 1 )
@@ -265,7 +268,7 @@ brekpn <- data.frame('year' = df$year,
                      'order' = as.numeric(ts(predict(fm1.nile),start=1996,freq=1)))
 
 # Update g5 with breakpoints
-g5 <- plotG(df, 'AF', 'Anoxic Factor (days)') +
+g5 <- plotG(df, 'AF', 'Anoxic factor (days)') +
   geom_vline(xintercept = 2010, linetype = 'dashed', size = 0.4) +
   geom_line(data = brekpn, aes(year, order), col = col.post, size = 0.4)
 
