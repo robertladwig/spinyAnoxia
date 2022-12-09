@@ -2,7 +2,7 @@ library(tidyverse)
 library(zoo)
 require(pracma)
 
-secchi = as.tibble(read_rds(file = 'data_input/0g_secchi_combined.rds')) |> 
+secchi = as_tibble(read_rds(file = 'data_input/0g_secchi_combined.rds')) |> 
   mutate(Date = as.Date(Date))
 
 secchi |> filter(Year > 1995) |> 
@@ -17,7 +17,7 @@ out.df = data.frame(year = 1995:2020, seccchiArea = NA)
 years = 1995:2020
 for (i in 1:length(years)) {
   year.data = secchi |> filter(Year == years[i]) |> 
-    filter(Month >= 4 & Month <= 6)
+    filter(Month >= 4 & Month <= 7)
   
   a = data.frame(Date = seq.Date(from = year.data$Date[1], to = tail(year.data$Date, 1), by = 'day')) |> 
     left_join(year.data |> select(Date, Secchi.Depth.m)) |> 
