@@ -40,7 +40,7 @@ fill.btwn.lines <- function(X, Y1, Y2, Color, xpd = F){
   polygon(x = poly.x, y = poly.y, col = Color, border = NA, xpd = xpd)
 }
 
-# ---- make plots ----
+# ---- make year plots ----
 
 tail(x)
 str(x)
@@ -79,5 +79,116 @@ for (yr in unique(x$Year)){
   dev.off()
 }
 
+# ---- make trend plots ----
 
+# to make sure the conception diagram sketch of clearwater is "correct"
 
+seas <- season.defs[season.defs$Year >= 1995, ]
+
+pdf(file = file.path(plot.folder,"clearwater_phenology_trends.pdf"), width = 6.5, height = 7)
+
+m <- matrix(1:10, nrow = 5)
+layout(mat = m, widths = c(5,1))
+
+par(mar = c(.5,4,1,.5), oma = c(2,.1,.1,0), xaxs = "i")
+
+plot(x = seas$Year, y = seas$duration, type = "n", ylim = c(0, max(seas$duration)), axes = F, ann = F)
+fill.under.lines(X = seas$Year, Y = seas$duration, YAxisMin = 0, Color = "lightblue")
+points(x = seas$Year, y = seas$duration, pch = 19, cex = .5)
+lines(x = seas$Year, y = seas$duration)
+abline(v = 2010, col = "orange2")
+mtext("duration", side = 2, line = 2.75)
+axis(side = 1, labels = F, lwd = 0, lwd.ticks = 1)
+axis(side = 2, las = 2, lwd = 0, lwd.ticks = 1)
+mtext(text = "\"gets shorter\"", side = 3, at = 2016, line = -3)
+box()
+
+plot(x = seas$Year, y = yday(seas$Clear.Start), type = "n", ylim = c(min(yday(seas$Clear.Start)), max(yday(seas$Clear.Start))), axes = F, ann = F)
+fill.under.lines(X = seas$Year, Y = yday(seas$Clear.Start), YAxisMin = 0, Color = "lightblue")
+points(x = seas$Year, y = yday(seas$Clear.Start), pch = 19, cex = .5)
+lines(x = seas$Year, y = yday(seas$Clear.Start))
+abline(v = 2010, col = "orange2")
+mtext("clear start", side = 2, line = 2.75)
+axis(side = 1, labels = F, lwd = 0, lwd.ticks = 1)
+axis(side = 2, las = 2, lwd = 0, lwd.ticks = 1)
+mtext(text = "\"starts later\"", side = 3, at = 2016, line = -6)
+box()
+
+plot(x = seas$Year, y = yday(seas$Clear.End), type = "n", ylim = c(min(yday(seas$Clear.End)), max(yday(seas$Clear.End))), axes = F, ann = F)
+fill.under.lines(X = seas$Year, Y = yday(seas$Clear.End), YAxisMin = 0, Color = "lightblue")
+points(x = seas$Year, y = yday(seas$Clear.End), pch = 19, cex = .5)
+lines(x = seas$Year, y = yday(seas$Clear.End))
+abline(v = 2010, col = "orange2")
+mtext("clear end", side = 2, line = 2.75)
+axis(side = 1, labels = F, lwd = 0, lwd.ticks = 1)
+axis(side = 2, las = 2, lwd = 0, lwd.ticks = 1)
+mtext(text = "\"ends earlier??\"", side = 3, at = 2015, line = -3)
+box()
+
+plot(x = seas$Year, y = -seas$Max.Clearwater.Depth.m, type = "n", ylim = c(-max(seas$Max.Clearwater.Depth.m),0), axes = F, ann = F)
+fill.under.lines(X = seas$Year, Y = -seas$Max.Clearwater.Depth.m, YAxisMin = -max(seas$Max.Clearwater.Depth.m), Color = "lightblue")
+points(x = seas$Year, y = -seas$Max.Clearwater.Depth.m, pch = 19, cex = .5)
+lines(x = seas$Year, y = -seas$Max.Clearwater.Depth.m)
+abline(v = 2010, col = "orange2")
+mtext("max depth", side = 2, line = 2.75)
+axis(side = 1, labels = F, lwd = 0, lwd.ticks = 1)
+axis(side = 2, las = 2, lwd = 0, lwd.ticks = 1)
+mtext(text = "\"gets shallower??\"", side = 3, at = 2015, line = -2.5)
+box()
+
+plot(x = seas$Year, y = yday(seas$Max.Clearwater.Depth.Date), type = "n", ylim = c(min(yday(seas$Max.Clearwater.Depth.Date)), max(yday(seas$Max.Clearwater.Depth.Date))), axes = F, ann = F)
+fill.under.lines(X = seas$Year, Y = yday(seas$Max.Clearwater.Depth.Date), YAxisMin = 0, Color = "lightblue")
+points(x = seas$Year, y = yday(seas$Max.Clearwater.Depth.Date), pch = 19, cex = .5)
+lines(x = seas$Year, y = yday(seas$Max.Clearwater.Depth.Date))
+abline(v = 2010, col = "orange2")
+mtext("date max", side = 2, line = 2.75)
+axis(side = 1, lwd = 0, lwd.ticks = 1)
+axis(side = 2, las = 2, lwd = 0, lwd.ticks = 1)
+mtext(text = "\"max shifts later\"", side = 3, at = 2016, line = -6.5)
+box()
+
+options(scipen = 9999)
+
+par(mar = c(.5,.1,1,.5))
+
+my.list <- list("pre" = seas$duration[seas$Year <= 2009], "post" = seas$duration[seas$Year > 2009])
+boxplot(x = my.list, col = "lightblue", axes = F, boxwex = .5)
+box()
+# mtext(text = c("pre","post"), at = c(1,2), side = 1, cex = .7)
+my.p <- wilcox.test(x = my.list$pre, y = my.list$post)
+mtext(paste("p =",round(my.p$p.value, 4)), cex = .7)
+abline(v = 1.5, col = "orange2")
+
+my.list <- list("pre" = yday(seas$Clear.Start)[seas$Year <= 2009], "post" = yday(seas$Clear.Start)[seas$Year > 2009])
+boxplot(x = my.list, col = "lightblue", axes = F, boxwex = .5)
+box()
+# mtext(text = c("pre","post"), at = c(1,2), side = 1, cex = .7)
+my.p <- wilcox.test(x = my.list$pre, y = my.list$post)
+mtext(paste("p =",round(my.p$p.value, 4)), cex = .7)
+abline(v = 1.5, col = "orange2")
+
+my.list <- list("pre" = yday(seas$Clear.End)[seas$Year <= 2009], "post" = yday(seas$Clear.End)[seas$Year > 2009])
+boxplot(x = my.list, col = "lightblue", axes = F, boxwex = .5)
+box()
+# mtext(text = c("pre","post"), at = c(1,2), side = 1, cex = .7)
+my.p <- wilcox.test(x = my.list$pre, y = my.list$post)
+mtext(paste("p =",round(my.p$p.value, 2)), cex = .7)
+abline(v = 1.5, col = "orange2")
+
+my.list <- list("pre" = seas$Max.Clearwater.Depth.m[seas$Year <= 2009], "post" = seas$Max.Clearwater.Depth.m[seas$Year > 2009])
+boxplot(x = my.list, col = "lightblue", axes = F, boxwex = .5)
+box()
+# mtext(text = c("pre","post"), at = c(1,2), side = 1, cex = .7)
+my.p <- wilcox.test(x = my.list$pre, y = my.list$post)
+mtext(paste("p =",round(my.p$p.value, 1)), cex = .7)
+abline(v = 1.5, col = "orange2")
+
+my.list <- list("pre" = yday(seas$Max.Clearwater.Depth.Date)[seas$Year <= 2009], "post" = yday(seas$Max.Clearwater.Depth.Date)[seas$Year > 2009])
+boxplot(x = my.list, col = "lightblue", axes = F, boxwex = .5)
+box()
+# mtext(text = c("pre","post"), at = c(1,2), side = 1, cex = .7)
+my.p <- wilcox.test(x = my.list$pre, y = my.list$post)
+mtext(paste("p =",round(my.p$p.value, 2)), cex = .7)
+abline(v = 1.5, col = "orange2")
+
+dev.off()
