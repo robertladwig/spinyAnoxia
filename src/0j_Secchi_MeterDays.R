@@ -21,9 +21,11 @@ for (i in 1:length(years)) {
   
   a = data.frame(Date = seq.Date(from = year.data$Date[1], to = tail(year.data$Date, 1), by = 'day')) |> 
     left_join(year.data |> select(Date, Secchi.Depth.m)) |> 
-    mutate(Secchi.interp = na.approx(Secchi.Depth.m))
+    mutate(Secchi.interp = na.approx(Secchi.Depth.m),
+           Secchi.diff = c(diff(Secchi.interp, lag = 1)[1], diff(Secchi.interp, lag = 1)))
   
-  out.df$seccchiArea[i] = trapz(1:nrow(a),a$Secchi.interp)
+  out.df$seccchiArea[i] = abs(trapz(1:nrow(a),a$Secchi.diff))
+  # out.df$seccchiArea[i] = trapz(1:nrow(a),a$Secchi.interp)
   
 }
 
