@@ -7,7 +7,8 @@ inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/29/30/03e232
 infile1 <- tempfile()
 try(download.file(inUrl1,infile1,method="curl"))
 
-physical <- read_csv(infile1) |> filter(lakeid == 'ME')
+physical <- read_csv(infile1) |> filter(lakeid == 'ME') |> 
+  filter(sampledate != as.Date('2007-05-14')) ### BAD OXYGEN DATA
 
 
 # load stratification data
@@ -41,5 +42,6 @@ ggplot(do.df) +
   theme(axis.title.x = element_blank(), 
         legend.position = c(0.9,0.85),
         legend.title = element_blank())
+
 ggsave('figs_publication/Fig5_HD.png', dpi = 500, units = 'in', width = 6.5, height = 3)
 
