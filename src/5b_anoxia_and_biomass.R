@@ -5,11 +5,13 @@
 
 library(lubridate)
 library(tidyverse)
-library(gridExtra)
+library(patchwork)
 
 phyto <- readRDS("data_processed/3a_phyto_list.rds")
 anox <- readRDS("data_input/14-DO_profiles_with_more_oxycline_stats-colnames_updated.rds") # pull from data I curated elsewhere- just quick for now
 strat <- readRDS("data_processed/3g_stratification_dates.rds")
+
+plot.file <- "figs_publication/Fig5-robin.pdf"
 
 # ---- format data ----
 
@@ -46,29 +48,56 @@ anox$invasion[anox$year >= 2010] <- "post"
 head(anox)
 summary(anox$top.anoxic)
 
-# ---- plot, attempt ggplot ----
+# ---- plot, attempt ggplot - align by strat ----
 
 p.anox <- ggplot(data = anox, aes(x = days.since.strat, y = top.anoxic, color = invasion))+
   scale_fill_manual(values = c("orange3", "steelblue"))+
   scale_color_manual(values = c("orange3", "steelblue"))+
-  geom_point(aes(fill = invasion), shape = 21, color = "black", size = 2, alpha = .5)+
+  geom_point(aes(fill = invasion), shape = 21, color = "black", size = 1, alpha = .5)+
   geom_path(aes(group = year), alpha = .5)+
   geom_smooth(aes(group = invasion, fill = invasion), method = "loess", alpha = .6)+
   theme_bw()+
   theme(panel.grid = element_blank())+
   coord_cartesian(xlim = c(-10,200), ylim = c(20,6))+
   scale_y_reverse()
-p.anox
 
 p.phyto <- ggplot(data = phyto, aes(x = days.since.strat, y = biomass, color = invasion))+
   scale_fill_manual(values = c("orange3", "steelblue"))+
   scale_color_manual(values = c("orange3", "steelblue"))+
-  geom_point(aes(fill = invasion), shape = 21, color = "black", size = 2, alpha = .5)+
+  geom_point(aes(fill = invasion), shape = 21, color = "black", size = 1, alpha = .5)+
   geom_path(aes(group = year),alpha = .5)+
   geom_smooth(aes(group = invasion, fill = invasion), method = "loess", alpha = .6)+
   theme_bw()+
   theme(panel.grid = element_blank())+
   coord_cartesian(xlim = c(-100,200), ylim = c(0,25))
-p.phyto
 
-grid.arrange(p.phyto,p.anox, nrow = 1)
+# ---- plot, attempt ggplot - align by date ----
+
+p.anox <- ggplot(data = anox, aes(x = yday, y = top.anoxic, color = invasion))+
+  scale_fill_manual(values = c("orange3", "steelblue"))+
+  scale_color_manual(values = c("orange3", "steelblue"))+
+  geom_point(aes(fill = invasion), shape = 21, color = "black", size = 1, alpha = .5)+
+  geom_path(aes(group = year), alpha = .5)+
+  geom_smooth(aes(group = invasion, fill = invasion), method = "loess", alpha = .6)+
+  theme_bw()+
+  theme(panel.grid = element_blank())+
+  coord_cartesian(xlim = c(150,350), ylim = c(20,6), expand = F)+
+  scale_y_reverse()+
+  scale_y_continuous(name = "Depth anoxic transition (m)")
+
+p.phyto <- ggplot(data = phyto, aes(x = yday, y = biomass, color = invasion))+
+  scale_fill_manual(values = c("orange3", "steelblue"))+
+  scale_color_manual(values = c("orange3", "steelblue"))+
+  geom_point(aes(fill = invasion), shape = 21, color = "black", size = 1, alpha = .5)+
+  geom_path(aes(group = year),alpha = .5)+
+  geom_smooth(aes(group = invasion, fill = invasion), method = "loess", alpha = .6)+
+  theme_bw()+
+  theme(panel.grid = element_blank())+
+  coord_cartesian(xlim = c(100,350), ylim = c(.01,25))+
+  scale_y_continuous(trans = "log10", name = "log biomass (mg/L)")
+
+# save plot ----
+
+pdf(file = plot.file, width = 6.5, height = 3)
+p.anox + p.phyto + plot_layout(ncol = 2, guides = "collect")
+dev.off()
