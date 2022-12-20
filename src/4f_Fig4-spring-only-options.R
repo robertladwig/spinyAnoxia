@@ -36,17 +36,25 @@ col.key$color[col.key$taxa == "Chrysophyta"] <- adjustcolor(rainbow(n = 20, v = 
 col.key$color[col.key$taxa == "Chlorophyta"] <- adjustcolor(rainbow(n = 20, v = .9)[8],.8)
 col.key$color[col.key$taxa == "Cryptophyta"] <- adjustcolor(rainbow(n = 20, v = .9)[1],.7)
 col.key$color[col.key$taxa == "Cyanophyta"] <- adjustcolor(rainbow(n = 20, v = .8)[12],.8)
-col.key$color[col.key$taxa == "Pyrrhophyta"] <- adjustcolor(rainbow(n = 20, v = .9)[5],.8)
+col.key$color[col.key$taxa == "Pyrrhophyta"] <- adjustcolor(rainbow(n = 20, v = .9)[4],.8)
 col.key$color[col.key$taxa == "other"] <- adjustcolor("grey40",.8)
 # col.key$color[col.key$taxa == "Xanthophyta"] <- adjustcolor(rainbow(n = 20, v = .5)[9],.8)
 # col.key$color[col.key$taxa == "Euglenophyta"] <- adjustcolor(rainbow(n = 20, v = .2)[6],.5)
 # col.key$color[col.key$taxa == "Haptophyta"] <- adjustcolor(rainbow(n = 20, v = .9)[20],.4)
 
 
-# ----
+# ---- get data to plot ----
 
 spring <- phyto[ ,key$Season == "spring"]
 spring[is.na(spring)] <- 0
+
+# ---- change to common names in legend ----
+
+all.equal(col.key$taxa, rownames(spring))
+col.key$taxa <- c("Diatoms","Green algae","Golden algae","Cryptophytes","Cyanobacteria","Other","Dinoflagellates")
+row.names(spring) <- c("Diatoms","Green algae","Golden algae","Cryptophytes","Cyanobacteria","Other","Dinoflagellates")
+
+# ---- order by abundance ----
 
 index <- order(rowSums(spring), decreasing = T)
 spring <- spring[index, ]
@@ -106,9 +114,9 @@ spring.av.perc <- cbind(spring.av.perc[ ,1:14],"gap" = 0, spring.av.perc[ ,15:nc
 
 # ---- make a prettier plot ----
 
-pdf(file = output.fig, width = 6.5, height = 3)
+pdf(file = output.fig, width = 6.5, height = 2.5)
 
-par(mar = c(.5,2.5,1,.5), oma = c(1.15,0,0,0))
+par(mar = c(.5,2.5,1,.5), oma = c(1.15,0,0,0), xaxs = "i")
 
 par(fig = c(0,.42,0,1))
 y.max <- 5.5
@@ -119,7 +127,7 @@ axis(side = 2, lwd = 0, line = -.6, las = 2, cex.axis = .7, at = seq.int(from = 
 index.labels <- c(seq.int(from = 2, to = 14, by = 2), seq.int(from = 16, to = ncol(spring.av), by = 2))
 text(x = bar.spots[index.labels], y = -1 * y.max / 80, labels = colnames(spring.av)[index.labels], xpd = NA, srt = 90, adj = 1, cex = .7)
 segments(x0 = bar.spots[15], x1 = bar.spots[15], y0 = 0, y1 = y.max, xpd = NA, lwd = 3, col = "black", lty = c("41"))
-mtext(text = "Biomass (mg/L)", side = 2, line = 1.25, outer = F)
+mtext(text = "Absolute Biomass (mg/L)", side = 2, line = 1.25, outer = F)
 
 par(fig = c(.42,.84,0,1), new = T)
 y.max = 100
@@ -129,11 +137,11 @@ axis(side = 2, line = 0, las = 2, cex.axis = .7,tck = -.025, labels = F, at = se
 axis(side = 2, lwd = 0, line = -.6, las = 2, cex.axis = .7, at = seq.int(from = 0, to = 100, by = 25))
 text(x = bar.spots[index.labels], y = -1 * y.max / 80, labels = colnames(spring.av.perc)[index.labels], xpd = NA, srt = 90, adj = 1, cex = .7)
 segments(x0 = bar.spots[15], x1 = bar.spots[15], y0 = 0, y1 = y.max, xpd = NA, lwd = 3, col = "black", lty = c("41"))
-mtext(text = "Biomass (%)", side = 2, line = 1.25, outer = F)
+mtext(text = "Relative Biomass (%)", side = 2, line = 1.25, outer = F)
 
 # legend
 # par(fig = c(.84,1,.3,.7), new = T, mar = c(0,0,0,0))
-par(fig = c(.84,1,.4,.72), new = T, mar = c(0,0,0,0)) # make tighter with fewer taxa listed
+par(fig = c(.84,1,.35,.72), new = T, mar = c(0,0,0,0)) # make tighter with fewer taxa listed
 plot(1:10,1:10, type = "n", ann = F, axes = F)
 lab.locs <- seq(from = 10, to = 0, along.with = rownames(spring.av))
 text(x = 3.3, y = lab.locs, labels = row.names(spring.av), cex = .7, xpd = NA, adj = 0)
