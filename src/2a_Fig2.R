@@ -29,7 +29,7 @@ biomass <- read_csv('../data_processed/3c_biomass_duration.csv')
 
 discharge <- read_csv('../data_processed/discharge.csv')
 
-cw <- readRDS('../data_processed/yearly_clearwater_stats.rds')
+cw <-  read_csv('../data_processed/clearwater.csv')
 
 nutrients <- read_csv('../data_processed/nutrients.csv')
 
@@ -61,8 +61,7 @@ df.discharge <- discharge %>%
   dplyr::filter(year != 1995 & year != 2021) 
 
 df.cw <- cw %>%
-  dplyr::filter(Year > 1995) %>%
-  rename(year = Year)
+  dplyr::filter(year > 1995) 
 
 df.spiny <- spiny %>%
   dplyr::filter(year != 1995 & year != 2021) %>%
@@ -85,7 +84,7 @@ df.red <- df[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
                  "Days.0.5.mg.L" , "Days.1.mg.L" , "Days.1.5.mg.L" ,
                  "Days.2.mg.L" , "Days.3.mg.L" ,
                  "sum.discharge" ,# "max.discharge" , "min.discharge" ,
-                 "Clearwater.Duration"  , "Max.Clearwater.Depth.m" , "Spiny" ,
+                 "Clearwater.Duration"  , "Spiny" ,
                  "pH" , "PO4.P_surf", "PO4.P_bot", "NO3.NO2.N_surf", "NO3.NO2.N_bot", "RSi")]
 sc.info <- scale(df.red)
 df.data <- as.data.frame(scale(df.red))
