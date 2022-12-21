@@ -139,6 +139,7 @@ plotBP <- function(var, ylabs) {
   p1 = p1 + stat_compare_means(label = 'p.format', size = 2, vjust = -1) + 
     theme_classic(base_size = 8) +
     theme(legend.position = 'none',
+          axis.title.y = element_blank(),
           axis.title.x = element_blank())
   return(p1)
 }
