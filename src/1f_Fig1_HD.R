@@ -275,14 +275,14 @@ g5 <- plotG(df, 'AF', 'Anoxic factor (days)', ylimit = c(40,80)) +
   geom_line(data = brekpn, aes(year, order), col = col.post, size = 0.4)
 
 
-plt1 <- (g5 + ggtitle("A)") + p1)  + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g5)$y$range$range) #anoxic
-plt2 <- (g6 + ggtitle("F)")+ p2) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g6)$y$range$range) # strat
-plt3 <- (g7 + ggtitle("C)")+ p3) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g7)$y$range$range) # do flux
-plt4 <- (g10 + ggtitle("E)")+ p6) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g10)$y$range$range) # clear
-plt5 <- (g8 + ggtitle("D)")+ p4) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g8)$y$range$range) # biomass
-plt6 <- (g12 + ggtitle("H)")+ p8) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g12)$y$range$range) # P
-plt9 <- (g15 + ggtitle("B)")+ p11) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g15)$y$range$range) # Spiny
-plt10 <- (g16 + ggtitle("G)")+ p12) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g16)$y$range$range) # Ice
+plt1 <- (g5 + ggtitle("A)") + p1)  + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g5)$y$range$range, expand = expansion(mult = c(0.05,0.2))) #anoxic
+plt2 <- (g6 + ggtitle("F)")+ p2) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g6)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # strat
+plt3 <- (g7 + ggtitle("C)")+ p3) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g7)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # do flux
+plt4 <- (g10 + ggtitle("E)")+ p6) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g10)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # clear
+plt5 <- (g8 + ggtitle("D)")+ p4) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g8)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # biomass
+plt6 <- (g12 + ggtitle("H)")+ p8) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g12)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # P
+plt9 <- (g15 + ggtitle("B)")+ p11) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g15)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Spiny
+plt10 <- (g16 + ggtitle("G)")+ p12) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g16)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Ice
 # plt7 <- (g13 + ggtitle("H)")+ p9) + plot_layout(widths = c(2, 1)) # N
 # plt8 <- (g14 + ggtitle("I)")+ p10) + plot_layout(widths = c(2, 1)) # Si
 # plt10 <- (g11 + ggtitle("J)")+ p7) + plot_layout(widths = c(2, 1)) # pH
