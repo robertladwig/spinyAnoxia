@@ -240,15 +240,19 @@ unique(oxy$Depth.m)
 unique(oxy$Hour)
 unique(oxy$Minute)
 
+oxy$People <- "NTL-LTER Basecrew"
+
 # the rep values appeared after rounding the values to nearest .5 m, just average them
-oxy.wide <- pivot_wider(data = oxy, id_cols = c("Year","Month","Day","Hour","Minute","Notes.Dissolved.Oxygen","Source.Dissolved.Oxygen"), names_from = "Depth.m", values_from = "Dissolved.Oxygen.mg.L", values_fn = mean)
+oxy.wide <- pivot_wider(data = oxy, 
+                        id_cols = c("Year","Month","Day","Hour","Minute","People","Notes.Dissolved.Oxygen","Source.Dissolved.Oxygen"), 
+                        names_from = "Depth.m", values_from = "Dissolved.Oxygen.mg.L", values_fn = mean)
 head(oxy.wide)
 colnames(oxy.wide)
-depths <- colnames(oxy.wide)[8:ncol(oxy.wide)]
+depths <- colnames(oxy.wide)[9:ncol(oxy.wide)]
 depths <- as.numeric(depths)
 index <- order(depths)
 depths[index]
-oxy.wide <- oxy.wide[ ,c(1:7,(8:ncol(oxy.wide))[index])]
+oxy.wide <- oxy.wide[ ,c(1:8,(9:ncol(oxy.wide))[index])]
 colnames(oxy.wide)
 
 unique(oxy.long$Depth.m)
