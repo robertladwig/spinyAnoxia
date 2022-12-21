@@ -285,7 +285,7 @@ old.do$Depth.m[index] <- 0
 all.do <- rbind(old.do, new.do)
 
 wide.do <- pivot_wider(data = all.do, 
-                       id_cols = c("Year","Month","Day","Hour","Minute","People","Notes.Dissolved.Oxygen","Source.Dissolved.Oxygen"), 
+                       id_cols = c("Year","Month","Day","People","Notes.Dissolved.Oxygen","Source.Dissolved.Oxygen"), 
                        names_from = "Depth.m", values_from = "Dissolved.Oxygen.mg.L")
 
 depths <- colnames(wide.do)[9:ncol(wide.do)]

@@ -177,7 +177,7 @@ oxy.wide$Minute <- minute(oxy.wide$Timestamp)
 
 colnames(oxy.wide)
 oxy.wide <- pivot_wider(data = oxy.wide, 
-                        id_cols = c("Year","Month","Day","Hour","Minute","People","Notes.Dissolved.Oxygen","Source.Dissolved.Oxygen"), 
+                        id_cols = c("Year","Month","Day","People","Notes.Dissolved.Oxygen","Source.Dissolved.Oxygen"), 
                         names_from = "Depth.m", values_from = "Dissolved.Oxygen.mg.L")
 
 depths <- colnames(oxy.wide)[9:ncol(oxy.wide)]
