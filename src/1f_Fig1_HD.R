@@ -100,13 +100,13 @@ g14 = plotG(df, 'RSi', 'React. Silica (mg/L)', ylimit = c(0,15))
 g15 = plotG(df, 'Spiny', 'Spiny water flea (counts)', ylimit = c(0,15))
 g16 = plotG(df, 'ice_duration', 'Ice duration (days)', ylimit = c(25,130))
 
-g6 = plotG(df, 'linear','Days Stratified', ylimit = c(120,250)) +
+g6 = plotG(df, 'linear','Stratification (days)', ylimit = c(120,250)) +
   geom_ribbon(aes(x = year, ymin = constant.low, ymax = constant.high), fill = 'grey80') +
   geom_line(aes(x = year, y = linear), size = 0.3) +
   geom_point(aes(x = year, y = linear), size = 1) +
   geom_line(aes(x = year, y = spline), linetype = 2, color = 'red3', size = 0.3)
 
-g7 = plotG(df, 'Jv', 'Volumetric Sink (mg/L)', ylimit = c(0.1,0.35) ) #+ #expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")
+g7 = plotG(df, 'Jv', 'Volumetric sink (mg/L)', ylimit = c(0.1,0.35) ) #+ #expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")
   # geom_smooth(aes(year, Jv, col = 'black'), method = "loess", size = 0.3, alpha = 0.2) +
   # geom_line(aes(year, Ja , col = 'gold'), size = 0.3) +
   # geom_point(aes(year, Ja , col = 'gold'), size = 1) +
