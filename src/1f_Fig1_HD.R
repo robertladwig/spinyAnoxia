@@ -128,12 +128,12 @@ compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'AF'), method ="kruskal.test")
 
 # Function to plot boxplots 
-plotBP <- function(var, ylabs, ylimit) {
+plotBP <- function(var, ylabs) {
   p1 <- ggboxplot(data = m.df.prior %>% dplyr::filter(variable == var), x = "class", y = "value",
                   xlab = '', ylab = ylabs, fill = 'class', palette = c(col.pre, col.post), #palette = "jco", 
-                  add = "jitter", size = 0.2, add.params = list(size = 0.8)) +
-    scale_y_continuous(expand = expansion(mult = c(0.05,0.2)), limits = ylimit) +
-    expand_limits(y = ylimit) +
+                  add = "jitter", size = 0.2, add.params = list(size = 0.8, shape = 21)) +
+    # scale_y_continuous(expand = expansion(mult = c(0.05,0.2)), limits = ylimit) +
+    # expand_limits(y = ylimit) +
     scale_x_discrete(labels = c('< 2010', '> 2010'))
   #  Add p-value
   p1 = p1 + stat_compare_means(label = 'p.format', size = 2, vjust = -1) + 
@@ -143,17 +143,16 @@ plotBP <- function(var, ylabs, ylimit) {
   return(p1)
 }
 
-
-p1 = plotBP('AF','', ylimit = c(40,80))
-p2 = plotBP('strat_duration', '', ylimit = c(120,250))
-p3 = plotBP('Jv', '', ylimit = c(0.1,0.35))
-p4 = plotBP('Days.1.mg.L', '', ylimit = c(70,310))
-p6 = plotBP('Clearwater.Duration', '', ylimit = c(150,550))
-p8 = plotBP('PO4.P_surf', '', ylimit = c(0,0.35))
-p9 = plotBP('NO3.NO2.N_surf', '', ylimit = c(0,0.8))
-p11 = plotBP('Spiny', '', ylimit = c(0,15))
-p10 = plotBP('RSi', '', ylimit = c(0,15))
-p12 = plotBP('ice_duration', '', ylimit = c(25,130))
+p1 = plotBP('AF',''); p1
+p2 = plotBP('strat_duration', '')
+p3 = plotBP('Jv', '')
+p4 = plotBP('Days.1.mg.L', '')
+p6 = plotBP('Clearwater.Duration', '')
+p8 = plotBP('PO4.P_surf', '')
+p9 = plotBP('NO3.NO2.N_surf', '')
+p11 = plotBP('Spiny', '')
+p10 = plotBP('RSi', '')
+p12 = plotBP('ice_duration', '')
 
 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'med'))
@@ -274,21 +273,22 @@ g5 <- plotG(df, 'AF', 'Anoxic factor (days)', ylimit = c(40,80)) +
   geom_vline(xintercept = 2010, linetype = 'dashed', size = 0.4) +
   geom_line(data = brekpn, aes(year, order), col = col.post, size = 0.4)
 
-plt1 <- (g5 + ggtitle("A)") + p1) + plot_layout(widths = c(2, 1)) #anoxic
-plt2 <- (g6 + ggtitle("F)")+ p2) + plot_layout(widths = c(2, 1)) # strat
-plt3 <- (g7 + ggtitle("C)")+ p3) + plot_layout(widths = c(2, 1)) # do flux
-plt4 <- (g10 + ggtitle("E)")+ p6) + plot_layout(widths = c(2, 1)) # clear
-plt5 <- (g8 + ggtitle("D)")+ p4) + plot_layout(widths = c(2, 1)) # biomass
-plt6 <- (g12 + ggtitle("H)")+ p8) + plot_layout(widths = c(2, 1)) # P
+
+plt1 <- (g5 + ggtitle("A)") + p1)  + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g5)$y$range$range) #anoxic
+plt2 <- (g6 + ggtitle("F)")+ p2) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g6)$y$range$range) # strat
+plt3 <- (g7 + ggtitle("C)")+ p3) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g7)$y$range$range) # do flux
+plt4 <- (g10 + ggtitle("E)")+ p6) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g10)$y$range$range) # clear
+plt5 <- (g8 + ggtitle("D)")+ p4) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g8)$y$range$range) # biomass
+plt6 <- (g12 + ggtitle("H)")+ p8) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g12)$y$range$range) # P
+plt9 <- (g15 + ggtitle("B)")+ p11) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g15)$y$range$range) # Spiny
+plt10 <- (g16 + ggtitle("G)")+ p12) + plot_layout(widths = c(2, 1)) & ylim(layer_scales(g16)$y$range$range) # Ice
 # plt7 <- (g13 + ggtitle("H)")+ p9) + plot_layout(widths = c(2, 1)) # N
 # plt8 <- (g14 + ggtitle("I)")+ p10) + plot_layout(widths = c(2, 1)) # Si
-plt9 <- (g15 + ggtitle("B)")+ p11) + plot_layout(widths = c(2, 1)) # spiny
-plt10 <- (g16 + ggtitle("G)")+ p12) + plot_layout(widths = c(2, 1)) # spiny
 # plt10 <- (g11 + ggtitle("J)")+ p7) + plot_layout(widths = c(2, 1)) # pH
 
 # Final figure
 fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt4 | plt2) / (plt10 | plt6) &
   theme(plot.title = element_text(size = 7, face = "bold"))
 
-ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 300, units = 'in', width = 6.5, height = 6)
+ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 6)
 
