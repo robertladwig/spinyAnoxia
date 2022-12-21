@@ -24,11 +24,16 @@ for (i in 1:length(years)) {
     mutate(Secchi.interp = na.approx(Secchi.Depth.m),
            Secchi.diff = c(diff(Secchi.interp, lag = 1)[1], diff(Secchi.interp, lag = 1)))
   
-  out.df$seccchiArea[i] = abs(trapz(1:nrow(a),a$Secchi.diff))
-  # out.df$seccchiArea[i] = trapz(1:nrow(a),a$Secchi.interp)
+  # out.df$seccchiArea[i] = abs(trapz(1:nrow(a),a$Secchi.diff))
+  out.df$seccchiArea[i] = trapz(1:nrow(a),a$Secchi.interp)
   
 }
 
 ggplot(out.df) +
   geom_point(aes(x = year, y = seccchiArea)) +
   geom_line(aes(x = year, y = seccchiArea))
+
+df = out.df %>%
+  rename(Clearwater.Duration = seccchiArea)
+
+write_csv(df, 'data_processed/clearwater.csv')

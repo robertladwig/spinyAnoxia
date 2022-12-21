@@ -1,6 +1,7 @@
 library(tidyverse)
 library(ggpubr)
 library(rstatix)
+library(patchwork)
 
 # Alternative Figure 3 boxplot with points 
 anoxia <- read_csv(file = "data_processed/timelag.csv") |> 
@@ -35,11 +36,12 @@ p1 = ggplot(phyto) +
   scale_fill_manual(values = c('steelblue','orange3')) +
   scale_x_discrete(labels = c('Ice', 'Spring\nMixed','Stratified','Fall\nMixed')) +
   stat_pvalue_manual(phyto.stat, label = "{p.adj}{p.adj.signif}", hide.ns = TRUE, 
-                     tip.length = 0.01, remove.bracket = FALSE, size = 2) +
+                     tip.length = 0.01, remove.bracket = FALSE, size = 2.3) +
   scale_y_continuous(expand = expansion(mult = c(0.03, 0.1))) +
   ylab("Phytoplankton Biomass"~(mg~L^-1)) +
   theme_bw(base_size = 9) +
-  theme(axis.title.x = element_blank(), 
+  theme(axis.title.x = element_blank(),
+        legend.background=element_blank(),
         legend.position = c(0.1,0.8),
         legend.title = element_blank()); p1
   
@@ -47,7 +49,7 @@ p2 = ggplot(anoxia) +
   geom_boxplot(aes(x = group, y = timelag, fill = group), size = 0.2) +
   geom_point(aes(x = group, y = timelag, fill = group), shape = 21, size = 2, position=position_dodge(width=0.75)) +
   scale_fill_manual(values = c('steelblue','orange3')) +
-  stat_pvalue_manual(anoxia.stat, label = "{p}{p.signif}", tip.length = 0.01, remove.bracket = FALSE, size = 2) +
+  stat_pvalue_manual(anoxia.stat, label = "{p}{p.signif}", tip.length = 0.01, remove.bracket = FALSE, size = 2.3) +
   scale_y_continuous(expand = expansion(mult = c(0.03, 0.1))) +
   ylab("Lag between stratfication \nand anoxia (days)") +
   theme_bw(base_size = 9) +
@@ -59,6 +61,6 @@ p2 = ggplot(anoxia) +
 p1 + p2 + plot_layout(widths = c(3,1)) +
   plot_annotation(tag_levels = 'A', tag_suffix = ')') & 
   theme(plot.tag = element_text(size  = 8))
-ggsave('figs_publication/Fig3_HD.png', dpi = 500, units = 'in', width = 6.5, height = 3)
+ggsave('figs_publication/Fig3_HD.png', dpi = 500, units = 'in', width = 6, height = 2.5)
 
 
