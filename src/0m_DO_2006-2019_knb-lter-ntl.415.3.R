@@ -261,6 +261,44 @@ library(tidyr)
 new.do <- dt1
 old.do <- dt3
 
+plot.profiles <- function(my.do, my.folder, index.depths){
+  depths <- colnames(my.do)[index.depths] |>
+    sub(pattern = "m", replacement = "") |>
+    as.numeric()
+  for (r in 1:nrow(my.do)){
+    day.label <- paste0("row ",r," - ", month(my.do$Month[r], abbr = T, label = TRUE), " ",my.do$Day[r], ", ", my.do$Year[r])
+    vals <- my.do[r, index.depths]
+    deps <- depths[!is.na(vals)]
+    vals <- vals[!is.na(vals)]
+    
+    jpeg(filename = file.path(my.folder, paste0(day.label,".jpg")), units = "in", width = 5.5, height = 7, res = 90, quality = 50)
+    par(mar = c(8,6.25,2,4.75))
+    plot(x = c(0,33), y = c(-25,0), ann = F, axes = F, type = "n")
+    box(which = "plot")
+    mtext(text = day.label, side = 3, line = .5, cex = 1.2)
+    
+    points(x = vals, y = -deps, bg = "pink", pch = 21, cex = 2, xpd = T)
+    text(x = vals, y = -deps, labels = deps, cex = .7)
+    
+    axis(side = 1, at = c(0,5,10,15,20,25,30), labels = F, tck = -.02, line = 0)
+    axis(side = 1, at = c(0,5,10,15,20,25,30), labels = T, lwd = 0, line = -.7)
+    mtext(text = "Dissolved Oxygen (mg/L)", side = 1, line = 3)
+    
+    axis(2, at = seq(0,-25,-5), labels = F, las = 2, line = 0)
+    axis(2, at = seq(0,-25,-5), labels = seq(0,25,5), las = 2, lwd = 0, line = -.25)
+    mtext(text = "Depth (m)", side = 2, line = 3)
+    
+    if (!is.na(my.do$Notes.Dissolved.Oxygen[r])){
+      mtext(text = paste("Notes:", my.do$Notes.Dissolved.Oxygen[r]), side = 1, line = 6, at = -12, adj = 0, cex = .7)
+    }
+    if (!is.na(my.do$Source.Dissolved.Oxygen[r])){
+      mtext(text = paste("Data source:", my.do$Source.Dissolved.Oxygen[r]), side = 1, line = 6.75, at = -12, adj = 0, cex = .7)  
+    }
+    
+    dev.off()
+  }
+}
+
 cbind(1:ncol(new.do), colnames(new.do))
 
 new.do <- new.do[ ,-c(6,8,10,11,12)]
@@ -282,17 +320,58 @@ old.do$Source.Dissolved.Oxygen = "knb-lter-ntl.415.3"
 index <- which(old.do$Depth.m == .1)
 old.do$Depth.m[index] <- 0
 
+# shit old.do has some issues.... ----
+
+# days included with no DO measurements
+index <- which(is.na(old.do$Dissolved.Oxygen.mg.L))
+old.do <- old.do[-index, ]
+
+# duplicate days that differ by notes only (checking same with the plots)
+wide.do <- pivot_wider(data = old.do, 
+                       id_cols = c("Year","Month","Day","People","Notes.Dissolved.Oxygen","Source.Dissolved.Oxygen"), 
+                       names_from = "Depth.m", values_from = "Dissolved.Oxygen.mg.L", values_fn = mean)
+wide.do$date <- paste(wide.do$Year,wide.do$Month,wide.do$Day)
+wide.do$date[duplicated(wide.do$date)]
+
+# plot.profiles(my.do = wide.do, my.folder = "~/Desktop/DO_plots/old.do/", index.depths = 7:(ncol(wide.do)-1))
+
+# removing duplicates and bad profiles
+remove.dup.rows <- c(99,101,103,105,107,109,111,113,115,117,119,121,123,125,128,130,132,134,135,136,138,140,141,145,150,152,159,167,174:176)
+
+wide.do <- wide.do[-remove.dup.rows, ]
+old.do <- pivot_longer(data = wide.do, cols = 7:(ncol(wide.do)-1), names_to = "Depth.m", values_to = "Dissolved.Oxygen.mg.L", values_drop_na = T)
+
+# well then check new.do too then ----
+
+wide.do <- pivot_wider(data = new.do, 
+                       id_cols = c("Year","Month","Day","People","Notes.Dissolved.Oxygen","Source.Dissolved.Oxygen"), 
+                       names_from = "Depth.m", values_from = "Dissolved.Oxygen.mg.L", values_fn = mean)
+wide.do$date <- paste(wide.do$Year,wide.do$Month,wide.do$Day)
+wide.do$date[duplicated(wide.do$date)]
+
+# plot.profiles(my.do = wide.do, my.folder = "~/Desktop/DO_plots/memo", index.depths = 7:(ncol(wide.do)-1))
+
+# looks like a surface got called 20
+wide.do[3,"20"] <- NA
+bad.days <- c(71,72,171)
+wide.do <- wide.do[-bad.days, ]
+
+new.do <- pivot_longer(data = wide.do, cols = 7:(ncol(wide.do)-1), names_to = "Depth.m", values_to = "Dissolved.Oxygen.mg.L", values_drop_na = T)
+
+# ----
+
 all.do <- rbind(old.do, new.do)
 
+# average readings from the same day
 wide.do <- pivot_wider(data = all.do, 
                        id_cols = c("Year","Month","Day","People","Notes.Dissolved.Oxygen","Source.Dissolved.Oxygen"), 
                        names_from = "Depth.m", values_from = "Dissolved.Oxygen.mg.L")
 
-depths <- colnames(wide.do)[9:ncol(wide.do)]
+depths <- colnames(wide.do)[7:ncol(wide.do)]
 depths <- as.numeric(depths)
 index <- order(depths)
-wide.do <- wide.do[ ,c(1:8,(9:ncol(wide.do))[index])]
-colnames(wide.do)[9:ncol(wide.do)] <- paste0(colnames(wide.do)[9:ncol(wide.do)],"m")
+wide.do <- wide.do[ ,c(1:6,(7:ncol(wide.do))[index])]
+colnames(wide.do)[7:ncol(wide.do)] <- paste0(colnames(wide.do)[7:ncol(wide.do)],"m")
 colnames(wide.do)
 
 # ---- export data ----
