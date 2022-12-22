@@ -140,6 +140,44 @@ library(tidyr)
 
 exo <- dt1
 
+plot.profiles <- function(my.do, my.folder, index.depths){
+  depths <- colnames(my.do)[index.depths] |>
+    sub(pattern = "m", replacement = "") |>
+    as.numeric()
+  for (r in 1:nrow(my.do)){
+    day.label <- paste0("row ",r," - ", month(my.do$Month[r], abbr = T, label = TRUE), " ",my.do$Day[r], ", ", my.do$Year[r])
+    vals <- my.do[r, index.depths]
+    deps <- depths[!is.na(vals)]
+    vals <- vals[!is.na(vals)]
+    
+    jpeg(filename = file.path(my.folder, paste0(day.label,".jpg")), units = "in", width = 5.5, height = 7, res = 90, quality = 50)
+    par(mar = c(8,6.25,2,4.75))
+    plot(x = c(0,33), y = c(-25,0), ann = F, axes = F, type = "n")
+    box(which = "plot")
+    mtext(text = day.label, side = 3, line = .5, cex = 1.2)
+    
+    points(x = vals, y = -deps, bg = "pink", pch = 21, cex = 2, xpd = T)
+    text(x = vals, y = -deps, labels = deps, cex = .7)
+    
+    axis(side = 1, at = c(0,5,10,15,20,25,30), labels = F, tck = -.02, line = 0)
+    axis(side = 1, at = c(0,5,10,15,20,25,30), labels = T, lwd = 0, line = -.7)
+    mtext(text = "Dissolved Oxygen (mg/L)", side = 1, line = 3)
+    
+    axis(2, at = seq(0,-25,-5), labels = F, las = 2, line = 0)
+    axis(2, at = seq(0,-25,-5), labels = seq(0,25,5), las = 2, lwd = 0, line = -.25)
+    mtext(text = "Depth (m)", side = 2, line = 3)
+    
+    if (!is.na(my.do$Notes.Dissolved.Oxygen[r])){
+      mtext(text = paste("Notes:", my.do$Notes.Dissolved.Oxygen[r]), side = 1, line = 6, at = -12, adj = 0, cex = .7)
+    }
+    if (!is.na(my.do$Source.Dissolved.Oxygen[r])){
+      mtext(text = paste("Data source:", my.do$Source.Dissolved.Oxygen[r]), side = 1, line = 6.75, at = -12, adj = 0, cex = .7)  
+    }
+    
+    dev.off()
+  }
+}
+
 head(exo)
 cbind(1:ncol(exo), colnames(exo))
 unique(exo$lakeid) # all mendota
@@ -180,13 +218,15 @@ oxy.wide <- pivot_wider(data = oxy.wide,
                         id_cols = c("Year","Month","Day","People","Notes.Dissolved.Oxygen","Source.Dissolved.Oxygen"), 
                         names_from = "Depth.m", values_from = "Dissolved.Oxygen.mg.L")
 
-depths <- colnames(oxy.wide)[9:ncol(oxy.wide)]
+# plot.profiles(my.do = oxy.wide, my.folder = "~/Desktop/DO_plots/exo/", index.depths = 7:ncol(oxy.wide))
+# all look good
+
+depths <- colnames(oxy.wide)[7:ncol(oxy.wide)]
 depths <- as.numeric(depths)
 index <- order(depths)
-oxy.wide <- oxy.wide[ ,c(1:8,(9:ncol(oxy.wide))[index])]
-colnames(oxy.wide)[9:ncol(oxy.wide)] <- paste0(colnames(oxy.wide)[9:ncol(oxy.wide)],"m")
+oxy.wide <- oxy.wide[ ,c(1:6,(7:ncol(oxy.wide))[index])]
+colnames(oxy.wide)[7:ncol(oxy.wide)] <- paste0(colnames(oxy.wide)[7:ncol(oxy.wide)],"m")
 colnames(oxy.wide)
-
 
 # ---- Export Files ----
 
