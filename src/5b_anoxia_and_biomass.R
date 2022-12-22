@@ -124,32 +124,40 @@ x.lab <- month(parse_date_time(x = paste(2:11,1), orders = "md"), label = T)
 p.anox <- ggplot(data = anox, aes(x = yday, y = Depth.m, color = invasion))+
   scale_fill_manual(values = c(col.post, col.pre))+
   scale_color_manual(values = c(col.post, col.pre))+
-  geom_point(aes(fill = invasion), shape = 21, color = "black", size = 1, alpha = .5)+
-  geom_path(aes(group = Year), alpha = .5)+
-  geom_smooth(aes(group = invasion, fill = invasion), method = "loess", alpha = .7)+
+  # geom_point(aes(fill = invasion), shape = 21, color = "black", size = 1, alpha = .5)+
+  geom_path(aes(group = Year), alpha = .5, linewidth = .3, show.legend = F)+
+  geom_smooth(aes(group = invasion, fill = invasion), method = "loess", alpha = .7, show.legend = F)+
   theme_bw()+
-  theme(panel.grid = element_blank())+
-  coord_cartesian(xlim = c(150,300), ylim = c(20,6), expand = F)+
+  theme(panel.grid = element_blank(), panel.border = element_rect(linewidth = 1))+
+  coord_cartesian(xlim = c(150,300), ylim = c(20,5), expand = F)+
   scale_x_continuous(name = element_blank(), breaks = x.lab.yday, labels = x.lab)+
   scale_y_reverse()+
-  scale_y_continuous(name = "Depth Anoxic Layer (m)")
+  scale_y_continuous(name = "Depth Anoxic Layer (m)")+
+  guides(fill = guide_legend(override.aes = list(alpha = .9, linetype = "blank"), byrow = TRUE, reverse = T))+ # need to specify byrow = T for it to respect the legend spacing
+  guides(color = guide_legend(reverse = T))+ # need both fill and color to be reversed
+  theme(legend.title = element_blank(), legend.spacing.y = unit(.5,"cm"))+
+  theme(axis.title.y = element_text(margin = margin(0,5,0,0)), axis.text.x = element_text(margin = margin(4,0,0,0)))
 
 p.phyto <- ggplot(data = phyto, aes(x = yday, y = biomass, color = invasion))+
   scale_fill_manual(values = c(col.post, col.pre))+
   scale_color_manual(values = c(col.post, col.pre))+
-  geom_point(aes(fill = invasion), shape = 21, color = "black", size = 1, alpha = .5)+
-  geom_path(aes(group = year),alpha = .5)+
-  geom_smooth(aes(group = invasion, fill = invasion), method = "loess", alpha = .7)+
+  # geom_point(aes(fill = invasion), shape = 21, color = "black", size = 1, alpha = .5)+
+  geom_path(aes(group = year),alpha = .5, linewidth = .3, show.legend = F)+
+  geom_smooth(aes(group = invasion, fill = invasion), method = "loess", alpha = .7, show.legend = T)+
   theme_bw()+
-  theme(panel.grid = element_blank())+
+  theme(panel.grid = element_blank(), panel.border = element_rect(linewidth = 1))+
   coord_cartesian(xlim = c(50,300), ylim = c(.01,25))+
   scale_x_continuous(name = element_blank(), breaks = x.lab.yday, labels = x.lab)+
-  scale_y_continuous(trans = "log10", name = "log Phytoplankton Biomass (log(mg/L))")
+  scale_y_continuous(trans = "log10", name = "log Phytoplankton Biomass (mg/L)")+
+  guides(fill = guide_legend(override.aes = list(alpha = .9, linetype = "blank"), byrow = TRUE, reverse = T))+ # need to specify byrow = T for it to respect the legend spacing
+  guides(color = guide_legend(reverse = T))+ # need both fill and color to be reversed
+  theme(legend.title = element_blank(), legend.spacing.y = unit(.25,"cm"), legend.margin = margin(c(0,0,2,0), unit = "cm"))+
+  theme(axis.title.y = element_text(margin = margin(0,5,0,0)), axis.text.x = element_text(margin = margin(4,0,0,0)))
 
-# save plot ----
+# save plot 
 
 pdf(file = plot.file, width = 6.5, height = 3)
 
-p.phyto + p.anox + plot_layout(ncol = 2, widths = c(2.1,1), guides = "collect")
+p.phyto + plot_spacer() + p.anox + plot_layout(ncol = 3, widths = c(1.5,.075,1), guides = "collect") & theme(plot.margin = margin(.1,.05,0,.05, unit = "cm"))
 
 dev.off()
