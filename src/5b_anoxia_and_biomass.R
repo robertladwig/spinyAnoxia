@@ -136,7 +136,7 @@ p.anox <- ggplot(data = anox, aes(x = yday, y = Depth.m, color = invasion))+
   guides(fill = guide_legend(override.aes = list(alpha = .9, linetype = "blank"), byrow = TRUE, reverse = T))+ # need to specify byrow = T for it to respect the legend spacing
   guides(color = guide_legend(reverse = T))+ # need both fill and color to be reversed
   theme(legend.title = element_blank(), legend.spacing.y = unit(.5,"cm"))+
-  theme(axis.title.y = element_text(margin = margin(0,5,0,0)), axis.text.x = element_text(margin = margin(4,0,0,0)))
+  theme(axis.title.y = element_text(margin = margin(0,5,0,0)), axis.text.x = element_text(margin = margin(4,0,0,0), angle = 90, hjust = 1, vjust = .5))
 
 p.phyto <- ggplot(data = phyto, aes(x = yday, y = biomass, color = invasion))+
   scale_fill_manual(values = c(col.post, col.pre))+
@@ -152,13 +152,13 @@ p.phyto <- ggplot(data = phyto, aes(x = yday, y = biomass, color = invasion))+
   guides(fill = guide_legend(override.aes = list(alpha = .9, linetype = "blank"), byrow = TRUE, reverse = T))+ # need to specify byrow = T for it to respect the legend spacing
   guides(color = guide_legend(reverse = T))+ # need both fill and color to be reversed
   theme(legend.title = element_blank(), legend.spacing.y = unit(.25,"cm"), legend.margin = margin(c(0,0,2,0), unit = "cm"))+
-  theme(axis.title.y = element_text(margin = margin(0,3,0,0)), axis.text.x = element_text(margin = margin(4,0,0,0)))
+  theme(axis.title.y = element_text(margin = margin(0,3,0,0)), axis.text.x = element_text(margin = margin(4,0,0,0), angle = 90, hjust = 1, vjust = .5))
 
 # save plot 
 
 pdf(file = plot.file, width = 6, height = 2.5)
 
-p.phyto + plot_spacer() + p.anox + plot_layout(ncol = 3, widths = c(1.75,0,1), guides = "collect") +
+p.phyto + plot_spacer() + p.anox + plot_layout(ncol = 3, widths = c(1,0,1), guides = "collect") +
   plot_annotation(tag_levels = 'A', tag_suffix = ')') & 
   theme(plot.margin = margin(.1,.05,0,.1, unit = "cm")) 
 
