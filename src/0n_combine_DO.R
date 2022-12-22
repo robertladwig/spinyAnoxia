@@ -58,7 +58,7 @@ for (d in unique(all.do$Date)){
 # simplify date columns ----
 
 all.do$Date <- parse_date_time(x = all.do$Date, orders = "ymd")
-all.do <- all.do[ ,c(6,4,5)]
+all.do <- all.do[ ,c(1:3,6,4,5)]
 
 # save long-formatted combined and filtered data ----
 
