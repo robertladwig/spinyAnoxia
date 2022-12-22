@@ -148,11 +148,11 @@ p.phyto <- ggplot(data = phyto, aes(x = yday, y = biomass, color = invasion))+
   theme(panel.grid = element_blank(), panel.border = element_rect(linewidth = 1))+
   coord_cartesian(xlim = c(50,300), ylim = c(.01,25))+
   scale_x_continuous(name = element_blank(), breaks = x.lab.yday, labels = x.lab)+
-  scale_y_continuous(trans = "log10", name = "log Phytoplankton Biomass (mg/L)")+
+  scale_y_continuous(trans = "log10", name = "log Biomass"~(mg~L^-1))+
   guides(fill = guide_legend(override.aes = list(alpha = .9, linetype = "blank"), byrow = TRUE, reverse = T))+ # need to specify byrow = T for it to respect the legend spacing
   guides(color = guide_legend(reverse = T))+ # need both fill and color to be reversed
   theme(legend.title = element_blank(), legend.spacing.y = unit(.25,"cm"), legend.margin = margin(c(0,0,2,0), unit = "cm"))+
-  theme(axis.title.y = element_text(margin = margin(0,5,0,5)), axis.text.x = element_text(margin = margin(4,0,0,0)))
+  theme(axis.title.y = element_text(margin = margin(0,3,0,0)), axis.text.x = element_text(margin = margin(4,0,0,0)))
 
 # save plot 
 
