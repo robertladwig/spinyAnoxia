@@ -37,7 +37,7 @@ phyto.stat = stat.test |> add_xy_position(x = "season", dodge = 0.8)
 
 p1 = ggplot(phyto) + 
   geom_boxplot(aes(x = season, y = Ave.Daily.mg.L, fill = group), size = 0.2, show.legend = F, outlier.shape = NA, color = "black", linewidth = .5) +
-  geom_point(aes(x = season, y = Ave.Daily.mg.L, fill = group), shape = 21, size = 1, position=position_jitterdodge(jitter.width = .5, jitter.height = 0, dodge.width = .75), show.legend = T) +
+  geom_point(aes(x = season, y = Ave.Daily.mg.L, fill = group), shape = 21, size = 1, position=position_jitterdodge(jitter.width = .25, jitter.height = 0, dodge.width = .75), show.legend = T) +
   scale_fill_manual(values = c(col.pre,col.post)) +
   scale_x_discrete(labels = c('Ice', 'Spring\nMixed','Stratified','Fall\nMixed')) +
   stat_pvalue_manual(phyto.stat, label = "{p.adj.signif}", hide.ns = TRUE, 
@@ -55,7 +55,7 @@ p1 = ggplot(phyto) +
   
 p2 = ggplot(anoxia) + 
   geom_boxplot(aes(x = group, y = timelag, fill = group), size = 0.2, outlier.shape = NA, color = "black", linewidth = .5) +
-  geom_point(aes(x = group, y = timelag, fill = group), shape = 21, size = 1, position=position_jitterdodge(jitter.width = .5, jitter.height = 0, dodge.width = .75)) +
+  geom_point(aes(x = group, y = timelag, fill = group), shape = 21, size = 1, position=position_jitterdodge(jitter.width = .25, jitter.height = 0, dodge.width = .75)) +
   scale_fill_manual(values = c(col.pre,col.post)) +
   stat_pvalue_manual(anoxia.stat, label = "{p.signif}", tip.length = 0.01, remove.bracket = FALSE, size = 4) +
   scale_y_continuous(expand = expansion(mult = c(0.03, 0.1))) +
