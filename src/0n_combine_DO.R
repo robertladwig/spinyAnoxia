@@ -16,17 +16,16 @@ colnames(memo)
 
 # long format to combine datasets ----
 
-lter <- pivot_longer(data = lter, cols = 9:ncol(lter), names_to = "Depth.m", values_to = "DO.mg.L", values_drop_na = T)
+lter <- pivot_longer(data = lter, cols = 7:ncol(lter), names_to = "Depth.m", values_to = "DO.mg.L", values_drop_na = T)
 head(lter)
 
-exo <- pivot_longer(data = exo, cols = 9:ncol(exo), names_to = "Depth.m", values_to = "DO.mg.L", values_drop_na = T)
+exo <- pivot_longer(data = exo, cols = 7:ncol(exo), names_to = "Depth.m", values_to = "DO.mg.L", values_drop_na = T)
 head(exo)
 
-memo <- pivot_longer(data = memo, cols = 9:ncol(memo), names_to = "Depth.m", values_to = "DO.mg.L", values_drop_na = T)
+memo <- pivot_longer(data = memo, cols = 7:ncol(memo), names_to = "Depth.m", values_to = "DO.mg.L", values_drop_na = T)
 head(memo)
 
 all.do <- rbind(lter, exo, memo)
-
 
 # combine same-day measurements by averaging the replicated depths ----
 
