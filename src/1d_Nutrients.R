@@ -5,6 +5,7 @@ library(NTLlakeloads)
 setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 
 library(tidyverse)
+library(lubridate)
 
 # Use these objects names, hardcoded at the moment
 LTERtemp = loadLTERtemp() # Download NTL LTER data from EDI
@@ -14,22 +15,22 @@ LTERions = loadLTERions() # Download NTL LTER data from EDI
 availableVars()
 
 # Hilary will kill me when she sees how I butchered her awesome functions...
-addNutr <- read_csv('../data_input/SLOH_2019-21.csv')
-addNutr = addNutr %>%
+addNutr <- read_csv('../data_input/SLOH_2019-21.csv') |> 
   dplyr::filter(lakeid == 'ME') %>%
   mutate(sampledate = as.Date(sampledate))
-addPH <- read_csv('../data_input/Mendota_pH.csv')
 
-idxPH <- match(as.Date(addPH$sampledate), as.Date(addNutr$sampledate))
-addPH_df = data.frame('lakeid' = 'ME', 'sampledate' = addPH[na.omit(idxPH), 'sampledate'],
-                      'depth' = 0, 'flag' = addPH[na.omit(idxPH), 'flag_avg_ph'],
-                      'param' = 'ph', 'value' = addPH[na.omit(idxPH), 'avg_ph']) %>%
-  rename(flag = flag_avg_ph, value = avg_ph) %>%
-  mutate(sampledate = as.Date(sampledate))
+# addPH <- read_csv('../data_input/Mendota_pH.csv')
+# 
+# idxPH <- match(as.Date(addPH$sampledate), as.Date(addNutr$sampledate))
+# addPH_df = data.frame('lakeid' = 'ME', 'sampledate' = addPH[na.omit(idxPH), 'sampledate'],
+#                       'depth' = 0, 'flag' = addPH[na.omit(idxPH), 'flag_avg_ph'],
+#                       'param' = 'ph', 'value' = addPH[na.omit(idxPH), 'avg_ph']) %>%
+#   rename(flag = flag_avg_ph, value = avg_ph) %>%
+#   mutate(sampledate = as.Date(sampledate))
+# 
+# addNutr_all <- rbind(addNutr, addPH_df)
 
-addNutr_all <- rbind(addNutr, addPH_df)
-
-addNutr_df <- addNutr_all %>%
+addNutr_df <- addNutr %>%
   mutate(lakeid = as.character(lakeid), sampledate = as.POSIXct(sampledate),
          year4 = year(sampledate), daynum = yday(sampledate)) %>%
   spread(param, value) %>%
@@ -44,13 +45,13 @@ LTERnutrients <- rbind(LTERnutrients_old, addNutr_df) %>%
   group_by(lakeid) %>%
   arrange(sampledate, depth)
 
-ggplot(subset(LTERnutrients, lakeid == "ME" & depth == 0), aes(sampledate, ph)) + geom_point()
+# ggplot(subset(LTERnutrients, lakeid == "ME" & depth == 0), aes(sampledate, ph)) + geom_point()
 
 # Original stuff
-df.pH = weeklyInterpolate(lakeAbr = 'ME', var = 'ph', maxdepth = 24, 
-                          constrainMethod = 'zero', setThreshold = 0.1, printFigs = F)
-
-plotTimeseries(df.pH$weeklyInterpolated, var = 'ph')
+# df.pH = weeklyInterpolate(lakeAbr = 'ME', var = 'ph', maxdepth = 24, 
+#                           constrainMethod = 'zero', setThreshold = 0.1, printFigs = F)
+# 
+# plotTimeseries(df.pH$weeklyInterpolated, var = 'ph')
 
 df.tp = weeklyInterpolate(lakeAbr = 'ME', var = 'drp_sloh', maxdepth = 24, 
                           constrainMethod = 'zero', setThreshold = 0.1, printFigs = F)
