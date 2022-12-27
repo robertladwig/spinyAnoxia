@@ -48,22 +48,22 @@ LTERnutrients <- rbind(LTERnutrients_old, addNutr_df) %>%
 # ggplot(subset(LTERnutrients, lakeid == "ME" & depth == 0), aes(sampledate, ph)) + geom_point()
 
 # Original stuff
-# df.pH = weeklyInterpolate(lakeAbr = 'ME', var = 'ph', maxdepth = 24, 
-#                           constrainMethod = 'zero', setThreshold = 0.1, printFigs = F)
-# 
-# plotTimeseries(df.pH$weeklyInterpolated, var = 'ph')
+df.pH = weeklyInterpolate(lakeAbr = 'ME', var = 'ph', dataset = LTERnutrients, maxdepth = 24,
+                          constrainMethod = 'zero', setThreshold = 0.1, printFigs = F)
 
-df.tp = weeklyInterpolate(lakeAbr = 'ME', var = 'drp_sloh', maxdepth = 24, 
+plotTimeseries(df.pH$weeklyInterpolated, var = 'ph')
+
+df.tp = weeklyInterpolate(lakeAbr = 'ME', var = 'drp_sloh', dataset = LTERnutrients, maxdepth = 24, 
                           constrainMethod = 'zero', setThreshold = 0.1, printFigs = F)
 
 plotTimeseries(df.tp$weeklyInterpolated, var = 'drp_sloh')
 
-df.tn = weeklyInterpolate(lakeAbr = 'ME', var = 'no3no2_sloh', maxdepth = 24, 
+df.tn = weeklyInterpolate(lakeAbr = 'ME', var = 'no3no2_sloh', dataset = LTERnutrients, maxdepth = 24, 
                           constrainMethod = 'zero', setThreshold = 0.1, printFigs = F)
 
 plotTimeseries(df.tn$weeklyInterpolated, var = 'no3no2_sloh')
 
-df.sil = weeklyInterpolate(lakeAbr = 'ME', var = 'drsif_sloh', maxdepth = 24, 
+df.sil = weeklyInterpolate(lakeAbr = 'ME', var = 'drsif_sloh', dataset = LTERnutrients, maxdepth = 24, 
                           constrainMethod = 'zero', setThreshold = 0.1, printFigs = F)
 
 plotTimeseries(df.sil$weeklyInterpolated, var = 'drsif_sloh')

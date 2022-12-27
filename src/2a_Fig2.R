@@ -85,7 +85,7 @@ df.red <- df[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
                  "Days.2.mg.L" , "Days.3.mg.L" ,
                  "sum.discharge" ,# "max.discharge" , "min.discharge" ,
                  "Clearwater.Duration"  , "Spiny" ,
-                 "pH" , "PO4.P_surf", "PO4.P_bot", "NO3.NO2.N_surf", "NO3.NO2.N_bot", "RSi")]
+                  "PO4.P_surf", "PO4.P_bot", "NO3.NO2.N_surf", "NO3.NO2.N_bot", "RSi")]
 sc.info <- scale(df.red)
 df.data <- as.data.frame(scale(df.red))
 boruta_output <- Boruta(AF ~ ., 
