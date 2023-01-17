@@ -87,7 +87,10 @@ df.red <- df[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
                  "Clearwater.Duration"  , "Spiny" ,
                   "PO4.P_surf", "PO4.P_bot", "NO3.NO2.N_surf", "NO3.NO2.N_bot", "RSi")]
 sc.info <- scale(df.red)
+# df.data.spiny = df.red %>%
+  # mutate(Spiny = (ifelse(Spiny > 0, 1, 0)))
 df.data <- as.data.frame(scale(df.red))
+# df.data$Spiny = df.data.spiny$Spiny
 boruta_output <- Boruta(AF ~ ., 
                         data = df.data, doTrace=2,
                         maxRuns = 1e5)  # perform Boruta search
@@ -118,6 +121,9 @@ step(hypo1)
 
 hypo1 <- lm(AF ~ strat_off + ice_duration + Days.1.mg.L + PO4.P_surf + 
               PO4.P_bot + Spiny , data = hyp.data)
+
+# hypo1 <- lm(AF ~ strat_off  + Days.1.5.mg.L + Spiny , data = hyp.data)
+# glm(AF ~ strat_off  + Days.1.5.mg.L + Spiny , data = hyp.data)
 
 sum.hypo1 <-summary(hypo1)
 
@@ -175,16 +181,16 @@ p.linear <- p + geom_line(aes(y = lwr), color = "grey", linetype = "dashed")+
 
 
 
+idx <- match(c( 'strat_off' , 'ice_duration' , 'Days.1.mg.L' , 'PO4.P_surf' , 'PO4.P_bot' , 'Spiny', 'AF'), colnames(df.red))
+hyp.data2 <- df.red[, idx]
 
-hyp.data2 <- hyp.data[, c(1,2,3,6,7)]
-
-
-colnames(hyp.data2) = c('Strat.dur', 'Total.sink', 'Days.0.5','ClearWat.dur', 'Anoxic.Factor', "SWF")
+# AF ~ strat_off + ice_duration + Days.1.mg.L + PO4.P_surf + PO4.P_bot + Spiny
+colnames(hyp.data2) = c('Strat.dur', 'Ice.dur', 'Days.1.0','PO4.surf','PO$.bot','SWF', 'Anoxic.Factor')
 
 res=cor(hyp.data2, method = c("pearson"))
 
 
-
+corrplot(res)
 
 
 

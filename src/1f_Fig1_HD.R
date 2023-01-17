@@ -134,7 +134,7 @@ plotBP <- function(var, ylabs) {
                   add = "jitter", size = 0.2, add.params = list(size = 0.8, shape = 21)) +
     # scale_y_continuous(expand = expansion(mult = c(0.05,0.2)), limits = ylimit) +
     # expand_limits(y = ylimit) +
-    scale_x_discrete(labels = c('< 2010', '> 2010'))
+    scale_x_discrete(labels = c('< 2010', '\u2265 2010'))
   #  Add p-value
   p1 = p1 + stat_compare_means(label = 'p.format', size = 2, vjust = -1) + 
     theme_classic(base_size = 8) +
