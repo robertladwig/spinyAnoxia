@@ -16,6 +16,7 @@ ice <- readRDS("data_processed/0c_ice_seasons_split_by_year.rds")
 
 plot.file <- "figs_publication/Fig5-robin.pdf"
 plot.file.vertical <- "figs_publication/Fig5-robin-vertical.pdf"
+plot.file.vertical.anoxia.top <- "figs_publication/Fig5-robin-vertical-flipped.pdf"
 
 col.pre <- adjustcolor("steelblue",.9)
 col.post <- "orange3"
@@ -224,7 +225,7 @@ p.phyto <- ggplot(data = phyto, aes(x = yday, y = biomass, color = invasion))+
   theme_robin()+
   theme(axis.title.y = element_text(margin = margin(0,0,0,0)))+
   scale_fill_manual(values = c(col.post, col.pre))+
-  scale_color_manual(values = c(col.post, col.pre))+
+  scale_color_manual(values = c(col.post, col.pre))
   
   
 
@@ -252,3 +253,22 @@ dev.off()
 # meaning that it can't just sit under the top axis space. 
 # To make June and June still line up, I widened the plot. 
 # ggplot and it's stupid rules
+
+# save plot with reversed A and B (anoxia on top)
+
+pdf(file = plot.file.vertical.anoxia.top, width = 3.6, height = 3)
+m <- c(
+  area(t = 1, b = 1, l = 1, r = 1),
+  area(t = 1, b = 1, l = 2, r = 2),
+  area(t = 2, b = 2, l = 1, r = 2)
+)
+guide_area() + p.anox + p.phyto + plot_layout(guides = "collect", design = m, widths = c(1.3,5)) +
+  plot_annotation(tag_levels = 'A', tag_suffix = ') ') & 
+  theme(plot.margin = margin(.1,.05,0,0, unit = "cm"),
+        plot.tag = element_text(size  = 8),
+        legend.position = "left", 
+        axis.title.y = element_text(size = 8),
+        axis.text = element_text(size = 8),
+        legend.text = element_text(size = 8)) 
+
+dev.off()
