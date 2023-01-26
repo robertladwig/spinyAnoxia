@@ -11,6 +11,10 @@ x[ ,c("Metric","Spring")]
 # Similarly, biomass under lake-ice increased to concentrations previously typical of spring, 
 # from 0.3 ± 0.3 to 2 ± 2 mg L\textsuperscript{-1} (p < 0.005)
 x[ ,c("Metric","Ice")]
+# No statistically significant change in total biomass was observed during the stratified season (p > 0.1),
+x[ ,c("Metric","Stratified")]
+# and more modest increases were observed during the fall mixed season (p < 0.05).
+x[ ,c("Metric","Fall")]
 # We found that after the spiny water flea invasion, the lag between stratification and anoxia onset decreased by nearly 2 weeks, 
 # from 51 ± 9 days to 39 ± 15 days (p < 0.05)
 x[ ,c("Metric","Days.till.anoxia")]
