@@ -17,6 +17,7 @@ library(RColorBrewer)
 
 # Load Files
 strat <- read_csv('data_processed/stratification.csv')
+ssi <- read_csv('data_processed/ssi.csv')
 anoxic <- read_csv("data_processed/anoxicfactor.csv")
 fluxes <- read_csv('data_processed/dosinks.csv')
 biomass <- read_csv('data_processed/3c_biomass_duration.csv')
@@ -25,13 +26,16 @@ cw <- read_csv('data_processed/clearwater.csv')#readRDS('data_processed/yearly_c
 nutrients <- read_csv('data_processed/nutrients.csv')
 spiny <- read_csv('data_processed/spiny.csv')
 physics <- read_csv('data_processed/physical_timings.csv')
+rainfall <- read_csv('data_processed/precipitation.csv')
 
-# Define colors 
+# Define colors
 col.pre <- "steelblue"
 col.post <- "orange3"
 
 df.strat <- strat
 df.physics <- physics
+df.ssi <- ssi %>%
+  rename(St = max.ssi)
 
 df.anoxic <- anoxic %>%
   dplyr::filter(year != 1995 & year != 2021) %>%
@@ -50,16 +54,21 @@ df.nutrients <- nutrients %>%
   rename(year = year)
 
 df.discharge <- discharge %>%
-  dplyr::filter(year != 1995 & year != 2021) 
+  dplyr::filter(year != 1995 & year != 2021)
 
 df.cw <- cw %>%
-  dplyr::filter(year > 1995) 
+  dplyr::filter(year > 1995)
 
 df.spiny <- spiny %>%
   dplyr::filter(year != 1995 & year != 2021) %>%
   rename(year = year, Spiny = mean)
 
-# Merge dataframes 
+df.rainfall <- rainfall %>%
+  dplyr::filter(wateryear >= 1995 & wateryear <= 2021) %>%
+  dplyr::select(c(wateryear, cumsum_pp)) %>%
+  rename(year = wateryear, CumPP = cumsum_pp)
+
+# Merge dataframes
 df <- merge(df.strat, df.anoxic, by = 'year')
 df <- merge(df, df.flux, by = 'year')
 df <- merge(df, df.biomass, by = 'year')
@@ -68,11 +77,13 @@ df <- merge(df, df.cw, by = 'year')
 df <- merge(df, df.nutrients, by = 'year')
 df <- merge(df, df.spiny, by = 'year')
 df <- merge(df, df.physics, by = 'year')
+df <- merge(df, df.ssi, by = 'year')
+df <- merge(df, df.rainfall, by = 'year')
 
 # Define colors
 cool.col <- c("#00AFBB", "#E7B800", "#FC4E07")
 
-# Function to plot timeseries 
+# Function to plot timeseries
 plotG <- function(df, var, ylabs, ylimit) {
   g1 = ggplot(df) +
     geom_line(aes_string('year', var), size = 0.3) +
@@ -114,29 +125,33 @@ g7 = plotG(df, 'Jv', 'Volumetric sink (mg/L)', ylimit = c(0.1,0.35) ) #+ #expres
   # scale_color_identity(guide = "legend", labels = c('Vol.','Areal')) +
   # theme(legend.position = c(0.2,0.9),
   #       legend.text = element_text(size = 6),
-  #       legend.title = element_blank(), 
+  #       legend.title = element_blank(),
   #       legend.background = element_rect(fill = "transparent"),
   #       legend.key.height = unit(0.1, 'cm'))
+g17 = plotG(df, 'St', 'Schmidt stability (J/m2)', ylimit = c(500,950))
+g18 = plotG(df, 'CumPP', 'Cum. precipitation (mm)', ylimit = c(600,1300))
+
 
 library(ggpubr)
 df.prior = df %>%
   mutate('class' = ifelse(year < 2010, 'prior 2010','post 2010')) %>%
-  dplyr::select(class, AF, strat_duration, Jz, Jv, Days.1.mg.L, discharge, ice_duration, Clearwater.Duration, pH, PO4.P_surf, NO3.NO2.N_surf, RSi, Spiny)
+  dplyr::select(class, AF, strat_duration, Jz, Jv, Days.1.mg.L, discharge, ice_duration, Clearwater.Duration, pH, PO4.P_surf, NO3.NO2.N_surf, RSi, Spiny,
+                St, CumPP)
 m.df.prior <- reshape2::melt(df.prior, id = 'class')
 
 compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
 compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'AF'), method ="kruskal.test")
 
-# Function to plot boxplots 
+# Function to plot boxplots
 plotBP <- function(var, ylabs) {
   p1 <- ggboxplot(data = m.df.prior %>% dplyr::filter(variable == var), x = "class", y = "value",
-                  xlab = '', ylab = ylabs, fill = 'class', palette = c(col.pre, col.post), #palette = "jco", 
+                  xlab = '', ylab = ylabs, fill = 'class', palette = c(col.pre, col.post), #palette = "jco",
                   add = "jitter", size = 0.2, add.params = list(size = 0.8, shape = 21)) +
     # scale_y_continuous(expand = expansion(mult = c(0.05,0.2)), limits = ylimit) +
     # expand_limits(y = ylimit) +
     scale_x_discrete(labels = c('< 2010', '\u2265 2010'))
   #  Add p-value
-  p1 = p1 + stat_compare_means(label = 'p.format', size = 2, vjust = -1) + 
+  p1 = p1 + stat_compare_means(label = 'p.format', size = 2, vjust = -1) +
     theme_classic(base_size = 8) +
     theme(legend.position = 'none',
           axis.title.y = element_blank(),
@@ -154,62 +169,64 @@ p9 = plotBP('NO3.NO2.N_surf', '')
 p11 = plotBP('Spiny', '')
 p10 = plotBP('RSi', '')
 p12 = plotBP('ice_duration', '')
+p13 = plotBP('St', '')
+p14 = plotBP('CumPP', '')
 
 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'med'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'med'), method ="kruskal.test")
-# 
+#
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Jz'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Jz'), method ="kruskal.test")
-# 
+#
 # sddef = m.df.prior %>% dplyr::filter(variable == 'Jz')%>% group_by(class) %>% summarise(mean = mean(value),
 #                                                                                 sdv= sd(value))
 # sddef$mean[1] - sddef$mean[2]
 # sqrt(sddef$sdv[1]**2 - sddef$sdv[2]**2)
-# 
+#
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Days.0.5.mg.L'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Days.0.5.mg.L'), method ="kruskal.test")
-# 
+#
 # sddef = m.df.prior %>% dplyr::filter(variable == 'Days.0.5.mg.L')%>% group_by(class)%>% summarise(mean = mean(value),
 #                                                                                           sdv= sd(value))
 # sddef$mean[1] - sddef$mean[2]
 # sqrt(abs(sddef$sdv[1]**2 - sddef$sdv[2]**2))
-# 
+#
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'discharge'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'discharge'), method ="kruskal.test")
-# 
+#
 # p5 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'discharge'), x = "class", y = "value",
 #                  palette = "jco", xlab = '', ylab = 'Discharge',fill = c(col.pre, col.post),
 #                  add = "jitter")
 # #  Add p-value
 # p5 = p5 + stat_compare_means(label = 'p.format') + theme_bw(base_size = 8)
-# 
+#
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Clearwater.Duration'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Clearwater.Duration'), method ="kruskal.test")
-# 
+#
 # sddef = m.df.prior %>% dplyr::filter(variable == 'Clearwater.Duration')%>% group_by(class) %>% summarise(mean = mean(value),
 #                                                                                                  sdv= sd(value))
 # sddef$mean[1] - sddef$mean[2]
 # sqrt(abs(sddef$sdv[1]**2 - sddef$sdv[2]**2))
-# 
+#
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'pH'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'pH'), method ="kruskal.test")
-# 
+#
 # p7 <- ggboxplot( m.df.prior %>% dplyr::filter(variable == 'pH'), x = "class", y = "value",
 #                  palette = "jco", xlab = '', ylab = 'pH',fill = c(col.pre, col.post),
 #                  add = "jitter")
 # #  Add p-value
 # p7 = p7 + stat_compare_means(label = 'p.format') + theme_bw(base_size = 8)
-# 
+#
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'PO4.P_surf'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'PO4.P_surf'), method ="kruskal.test")
-# 
+#
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'NO3.NO2.N_surf'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'NO3.NO2.N_surf'), method ="kruskal.test")
-# 
+#
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'RSi'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'RSi'), method ="kruskal.test")
-# 
+#
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Spiny'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Spiny'), method ="kruskal.test")
 
@@ -223,7 +240,7 @@ library(xts)
 
 ts.af =  ts(df$AF, start= 1996, frequency = 1)
 plot(ts.af)
-# 
+#
 # plot(merge(
 #        AF = as.zoo(ts.af),
 #        zoo(mean(AF), time(AF)),
@@ -233,7 +250,7 @@ plot(ts.af)
 #        zoo(0, time(AF))
 #      ), screen = c(1, 1, 2, 2, 3, 3), main = "", xlab = "Time",
 #   col = c(1, 4, 1, 4, 1, 4) )
-# 
+#
 # plot(merge(
 #         AF = as.zoo(ts.af),
 #         zoo(c(NA, cumsum(head(AF, -1))/1:99), time(AF)),
@@ -286,9 +303,11 @@ plt10 <- (g16 + ggtitle("G)")+ p12) + plot_layout(widths = c(2, 1)) & scale_y_co
 # plt7 <- (g13 + ggtitle("H)")+ p9) + plot_layout(widths = c(2, 1)) # N
 # plt8 <- (g14 + ggtitle("I)")+ p10) + plot_layout(widths = c(2, 1)) # Si
 # plt10 <- (g11 + ggtitle("J)")+ p7) + plot_layout(widths = c(2, 1)) # pH
+plt11 <- (g17 + ggtitle("I)")+ p13) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g17)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Schmidt
+plt12 <- (g18 + ggtitle("J)")+ p14) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g18)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
 
 # Final figure
-fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt4 | plt2) / (plt10 | plt6) &
+fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt4 | plt2) / (plt10 | plt6)/ (plt11 | plt12) &
   theme(plot.title = element_text(size = 7, face = "bold"))
 
 ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 6)

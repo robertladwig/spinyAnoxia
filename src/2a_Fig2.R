@@ -35,11 +35,15 @@ nutrients <- read_csv('../data_processed/nutrients.csv')
 
 spiny <- read_csv('../data_processed/spiny.csv')
 
+ssi <- read_csv('../data_processed/ssi.csv')
+
+rainfall <- read_csv('../data_processed/precipitation.csv')
 
 col.pre <- "steelblue"
 col.post <- "orange3"
 
-df.physics <- physics 
+df.physics <- physics
+df.ssi <- ssi
 
 df.anoxic <- anoxic %>%
   dplyr::filter(year != 1995 & year != 2021) %>%
@@ -58,14 +62,20 @@ df.nutrients <- nutrients %>%
   rename(year = year)
 
 df.discharge <- discharge %>%
-  dplyr::filter(year != 1995 & year != 2021) 
+  dplyr::filter(year != 1995 & year != 2021)
 
 df.cw <- cw %>%
-  dplyr::filter(year > 1995) 
+  dplyr::filter(year > 1995)
 
 df.spiny <- spiny %>%
   dplyr::filter(year != 1995 & year != 2021) %>%
   rename(year = year, Spiny = mean)
+
+df.rainfall <- rainfall %>%
+  dplyr::filter(wateryear >= 1995 & wateryear <= 2021) %>%
+  dplyr::select(c(wateryear, cumsum_pp)) %>%
+  rename(year = wateryear, CumPP = cumsum_pp)
+
 
 df <- merge(df.physics, df.anoxic, by = 'year')
 df <- merge(df, df.flux, by = 'year')
@@ -74,24 +84,27 @@ df <- merge(df, df.discharge, by = 'year')
 df <- merge(df, df.cw, by = 'year')
 df <- merge(df, df.nutrients, by = 'year')
 df <- merge(df, df.spiny, by = 'year')
+df <- merge(df, df.ssi, by = 'year')
+df <- merge(df, df.rainfall, by = 'year')
 
 str(df)
 head(df)
 
-df.red <- df[, c("AF",'strat_on' , "strat_off" , "strat_duration" , 
-                 "ice_on" , "ice_off" , "ice_duration" , 
-                 "Jz" , "Jv" , "Ja" , 
+df.red <- df[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
+                 "ice_on" , "ice_off" , "ice_duration" ,
+                 "Jz" , "Jv" , "Ja" ,
                  "Days.0.5.mg.L" , "Days.1.mg.L" , "Days.1.5.mg.L" ,
                  "Days.2.mg.L" , "Days.3.mg.L" ,
                  "sum.discharge" ,# "max.discharge" , "min.discharge" ,
                  "Clearwater.Duration"  , "Spiny" ,
-                  "PO4.P_surf", "PO4.P_bot", "NO3.NO2.N_surf", "NO3.NO2.N_bot", "RSi")]
+                  "PO4.P_surf", "PO4.P_bot", "NO3.NO2.N_surf", "NO3.NO2.N_bot", "RSi",
+                 "max.ssi", 'CumPP')]
 sc.info <- scale(df.red)
 # df.data.spiny = df.red %>%
   # mutate(Spiny = (ifelse(Spiny > 0, 1, 0)))
 df.data <- as.data.frame(scale(df.red))
 # df.data$Spiny = df.data.spiny$Spiny
-boruta_output <- Boruta(AF ~ ., 
+boruta_output <- Boruta(AF ~ .,
                         data = df.data, doTrace=2,
                         maxRuns = 1e5)  # perform Boruta search
 boruta_signif <- names(boruta_output$finalDecision[boruta_output$finalDecision %in% c("Confirmed", "Tentative")])  # collect Confirmed and Tentative variables
@@ -119,7 +132,7 @@ sum.hypo1 <-summary(hypo1)
 step(hypo1)
 
 
-hypo1 <- lm(AF ~ strat_off + ice_duration + Days.1.mg.L + PO4.P_surf + 
+hypo1 <- lm(AF ~ strat_off + ice_duration + Days.1.mg.L + PO4.P_surf +
               PO4.P_bot + Spiny , data = hyp.data)
 
 # hypo1 <- lm(AF ~ strat_off  + Days.1.5.mg.L + Spiny , data = hyp.data)
@@ -195,7 +208,7 @@ corrplot(res)
 
 
 
-g1 <- ggplot(df,aes(med, AF)) + 
+g1 <- ggplot(df,aes(med, AF)) +
   geom_point() +
   xlab('Mean stratification duration (d)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -205,7 +218,7 @@ g1 <- ggplot(df,aes(med, AF)) +
                label.y = 0.05,
                label.x = 0.1) +
   theme_bw()
-g2 <- ggplot(df,aes(Jv, AF)) + 
+g2 <- ggplot(df,aes(Jv, AF)) +
   geom_point() +
   xlab('Volumetric sink (g/m3/d))') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -215,7 +228,7 @@ g2 <- ggplot(df,aes(Jv, AF)) +
                label.y = 0.05,
                label.x = 0.1) +
   theme_bw()
-g3 <- ggplot(df,aes(Ja, AF)) + 
+g3 <- ggplot(df,aes(Ja, AF)) +
   geom_point() +
   xlab('Areal sink (g/m2/d)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -225,7 +238,7 @@ g3 <- ggplot(df,aes(Ja, AF)) +
                label.y = 0.05,
                label.x = 0.1) +
   theme_bw()
-g4 <- ggplot(df,aes(Jz, AF)) + 
+g4 <- ggplot(df,aes(Jz, AF)) +
   geom_point() +
   xlab('Total sink (g/m3/d)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -235,7 +248,7 @@ g4 <- ggplot(df,aes(Jz, AF)) +
                label.y = 0.05,
                label.x = 0.1) +
   theme_bw()
-g5 <- ggplot(df,aes(Days.1.mg.L, AF)) + 
+g5 <- ggplot(df,aes(Days.1.mg.L, AF)) +
   geom_point() +
   xlab('Biomass over 1.0 mg/L (d)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -245,7 +258,7 @@ g5 <- ggplot(df,aes(Days.1.mg.L, AF)) +
                label.y = 0.05,
                label.x = 0.1) +
   theme_bw()
-g6 <- ggplot(df,aes(Days.1.5.mg.L, AF)) + 
+g6 <- ggplot(df,aes(Days.1.5.mg.L, AF)) +
   geom_point() +
   xlab('Biomass over 1 mg/L (d)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -255,7 +268,7 @@ g6 <- ggplot(df,aes(Days.1.5.mg.L, AF)) +
                label.y = 0.05,
                label.x = 0.1) +
   theme_bw()
-g7 <- ggplot(df,aes(discharge, AF)) + 
+g7 <- ggplot(df,aes(discharge, AF)) +
   geom_point() +
   xlab('Yahara Q (cfs)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -265,7 +278,7 @@ g7 <- ggplot(df,aes(discharge, AF)) +
                label.y = 0.05,
                label.x = 0.1) +
   theme_bw()
-g8 <- ggplot(df,aes(Clearwater.Duration, AF)) + 
+g8 <- ggplot(df,aes(Clearwater.Duration, AF)) +
   geom_point() +
   xlab('Clearwater duration') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -276,7 +289,7 @@ g8 <- ggplot(df,aes(Clearwater.Duration, AF)) +
                label.x = 0.1) +
   theme_bw()
 
-g9 <- ggplot(df,aes(Spiny, AF)) + 
+g9 <- ggplot(df,aes(Spiny, AF)) +
   geom_point() +
   xlab('Spiny waterflea biomass (counts)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -287,7 +300,7 @@ g9 <- ggplot(df,aes(Spiny, AF)) +
                label.x = 0.1) +
   theme_bw()
 
-g10 <- ggplot(df,aes(PO4.P_surf, AF)) + 
+g10 <- ggplot(df,aes(PO4.P_surf, AF)) +
   geom_point() +
   xlab('Epilimnetic phosphate (mg/L)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -298,7 +311,7 @@ g10 <- ggplot(df,aes(PO4.P_surf, AF)) +
                label.x = 0.1) +
   theme_bw()
 
-g11 <- ggplot(df,aes(PO4.P_bot, AF)) + 
+g11 <- ggplot(df,aes(PO4.P_bot, AF)) +
   geom_point() +
   xlab('Hypolimnetic phosphate (mg/L)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -308,7 +321,7 @@ g11 <- ggplot(df,aes(PO4.P_bot, AF)) +
                label.y = 0.05,
                label.x = 0.1) +
   theme_bw()
-g12 <- ggplot(df,aes(strat_off, AF)) + 
+g12 <- ggplot(df,aes(strat_off, AF)) +
   geom_point() +
   xlab('Strat. breakdown date (-)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
@@ -318,7 +331,7 @@ g12 <- ggplot(df,aes(strat_off, AF)) +
                label.y = 0.05,
                label.x = 0.1) +
   theme_bw()
-g13 <- ggplot(df,aes(ice_duration, AF)) + 
+g13 <- ggplot(df,aes(ice_duration, AF)) +
   geom_point() +
   xlab('Ice duration (d)') + ylab('Anoxic factor (d)') +
   geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ (x)) +
