@@ -151,6 +151,7 @@ coeff = data.frame('year' = NULL,
                    'id' = NULL)
 anoxicfactor = data.frame('year' = NULL,
                           'AF' = NULL,
+                          "Volume" = NULL,
                           'id' = NULL)
 
 df.lag = data.frame('year' = NULL,
@@ -249,20 +250,20 @@ for (id.year in unique(df$year4)[-1]){
       colSums(dat1)[max.date+2] > colSums(dat1)[max.date + 1] ){
     max.date <- which.max(colSums(dat1))+2
   }
-  
+
   strat.onset.date <- strat.onset$mean[match(id.year, strat.onset$year)]
   absdiff <- (abs(yday(unique(obs$sampledate)) - strat.onset.date)) #yday('1989-04-15')
   max.date2 <- which.min(absdiff)
-  
+
   ssi.start.date <- ssi.start$schmidt.start[match(id.year, ssi.start$year)]
-  
+
   if (max.date > max.date2){
     max.date <- max.date
   } else {
     max.date <- max.date
   }
 
-  
+
   therm.dep <- ceiling(mean(ph1[4,], na.rm = T))
 
   dat2 <- dat1[which(seq(0, 23, 0.5) == therm.dep) : nrow(dat1), max.date:ncol(dat1)]
@@ -278,7 +279,7 @@ for (id.year in unique(df$year4)[-1]){
   }
 
   thresh <- 1.5
-  
+
   areas.af <- approx(depths, areas, seq(0,23,0.5))$y
   dat.af = matrix(NA, ncol = length(seq(yday(unique(obs$sampledate))[1], max(yday(unique(obs$sampledate))), 1)), nrow = nrow(dat1))
   for (m in 1:nrow(dat.af)){
@@ -293,9 +294,13 @@ for (id.year in unique(df$year4)[-1]){
   seq.af <- na.contiguous(apply(dat.af3, 2, function(x) which.min(x)[1]))
   sum(areas.af[seq.af])/max(areas.af)
 
+  volumes.af = areas.af * 0.5
+  sum(volumes.af) / (500 * 10^6)
+
   anoxicfactor = rbind(anoxicfactor, data.frame('year' = id.year,
                             # 'AF' = sum(areas.af[seq.af])/max(areas.af),
                             'AF' = sum(areas.af[apply(dat.af3, 2, function(x) which.min(x)[1])], na.rm = T)/max(areas.af),
+                            "Volume" = sum(volumes.af[apply(dat.af3, 2, function(x) which.min(x)[1])], na.rm = T),
                             'id' = 'ME'))
 
   for (j in 1:nrow(dat2)){
@@ -306,7 +311,7 @@ for (id.year in unique(df$year4)[-1]){
 
     start.time = times[1]
     end.time = times[which(dat2[j,] < thresh)[1]]
-    
+
     if (j == nrow(dat2)){
       df.lag <- rbind(df.lag, data.frame('year' = id.year,
                                          'timelag' = end.time - strat.onset.date,#strat.onset.date,ssi.start.date,
@@ -349,9 +354,9 @@ for (l in unique(df.livingstone$year)){
 
   sum.mod <- lm(abs(jz) ~ log(alphaz), data = dit.l)
   p  <-summary(sum.mod)$coefficients[,"Pr(>|t|)"][2]
-  
-  
-  
+
+
+
   if (!is.na(p) && p <= 0.05){
     coeff = rbind(coeff, data.frame('year' = l,
                                     'Jz' = abs(median(dit.l$jz, na.rm = T)),
@@ -366,7 +371,7 @@ for (l in unique(df.livingstone$year)){
                                     'Ja' = NA,
                                     'id' = "ME"))
   }
-  
+
   # coeff = rbind(coeff, data.frame('year' = l,
   #                                 'Jz' = abs(median(dit.l$jz, na.rm = T)),
   #                                 'Jv' = sum.mod$coefficients[1],
@@ -426,3 +431,9 @@ g2 <- ggplot(coeff, aes(year, Jz, col = 'Volumetric')) +
 write_csv(anoxicfactor, '../data_processed/anoxicfactor.csv')
 write_csv(coeff, '../data_processed/dosinks.csv')
 write_csv(df.lag, '../data_processed/timelag.csv')
+
+ggplot(anoxicfactor) +
+  geom_point(aes(AF, Volume))
+
+model <- lm(Volume ~ AF, data = anoxicfactor)
+summary(model)

@@ -117,7 +117,7 @@ g6 = plotG(df, 'linear','Stratification (days)', ylimit = c(120,250)) +
   geom_point(aes(x = year, y = linear), size = 1) +
   geom_line(aes(x = year, y = spline), linetype = 2, color = 'red3', size = 0.3)
 
-g7 = plotG(df, 'Jv', 'Volumetric sink (mg/L)', ylimit = c(0.1,0.35) ) #+ #expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")
+g7 = plotG(df, 'Jz', 'DO consumption (mg/L/d)', ylimit = c(0.1,0.35) ) #+ #expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")
   # geom_smooth(aes(year, Jv, col = 'black'), method = "loess", size = 0.3, alpha = 0.2) +
   # geom_line(aes(year, Ja , col = 'gold'), size = 0.3) +
   # geom_point(aes(year, Ja , col = 'gold'), size = 1) +
@@ -161,7 +161,7 @@ plotBP <- function(var, ylabs) {
 
 p1 = plotBP('AF',''); p1
 p2 = plotBP('strat_duration', '')
-p3 = plotBP('Jv', '')
+p3 = plotBP('Jz', '')
 p4 = plotBP('Days.1.mg.L', '')
 p6 = plotBP('Clearwater.Duration', '')
 p8 = plotBP('PO4.P_surf', '')
@@ -172,18 +172,23 @@ p12 = plotBP('ice_duration', '')
 p13 = plotBP('St', '')
 p14 = plotBP('CumPP', '')
 
+# compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
+# m.df.prior %>% dplyr::filter(variable == 'AF') %>% dplyr::group_by(class) %>% summarise(mean = mean(value), sd = sd(value))
+# compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'AF'), method ="kruskal.test")
 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'med'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'med'), method ="kruskal.test")
 #
-# compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Jz'))
-# compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Jz'), method ="kruskal.test")
-#
-# sddef = m.df.prior %>% dplyr::filter(variable == 'Jz')%>% group_by(class) %>% summarise(mean = mean(value),
-#                                                                                 sdv= sd(value))
-# sddef$mean[1] - sddef$mean[2]
-# sqrt(sddef$sdv[1]**2 - sddef$sdv[2]**2)
-#
+compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Jv'))
+compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Jv'), method ="kruskal.test")
+
+m.df.prior %>% dplyr::filter(variable == 'Jv') %>% dplyr::group_by(class) %>% summarise(mean = mean(value), sd = sd(value))
+
+sddef = m.df.prior %>% dplyr::filter(variable == 'Jv')%>% group_by(class) %>% summarise(mean = mean(value),
+                                                                                sdv= sd(value))
+sddef$mean[1] - sddef$mean[2]
+sqrt(sddef$sdv[1]**2 - sddef$sdv[2]**2)
+
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'Days.0.5.mg.L'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'Days.0.5.mg.L'), method ="kruskal.test")
 #
