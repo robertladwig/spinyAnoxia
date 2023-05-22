@@ -111,13 +111,14 @@ g14 = plotG(df, 'RSi', 'React. Silica (mg/L)', ylimit = c(0,15))
 g15 = plotG(df, 'Spiny', 'Spiny water flea (counts)', ylimit = c(0,15))
 g16 = plotG(df, 'ice_duration', 'Ice duration (days)', ylimit = c(25,130))
 
+
 g6 = plotG(df, 'linear','Stratification (days)', ylimit = c(120,250)) +
   geom_ribbon(aes(x = year, ymin = constant.low, ymax = constant.high), fill = 'grey80') +
   geom_line(aes(x = year, y = linear), size = 0.3) +
   geom_point(aes(x = year, y = linear), size = 1) +
   geom_line(aes(x = year, y = spline), linetype = 2, color = 'red3', size = 0.3)
 
-g7 = plotG(df, 'Jz', 'DO consumption (mg/L/d)', ylimit = c(0.1,0.35) ) #+ #expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")
+g7 = plotG(df, 'Jz', 'DO flux (mg/L/d)', ylimit = c(0.1,0.35) ) #+ #expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")
   # geom_smooth(aes(year, Jv, col = 'black'), method = "loess", size = 0.3, alpha = 0.2) +
   # geom_line(aes(year, Ja , col = 'gold'), size = 0.3) +
   # geom_point(aes(year, Ja , col = 'gold'), size = 1) +
@@ -130,13 +131,14 @@ g7 = plotG(df, 'Jz', 'DO consumption (mg/L/d)', ylimit = c(0.1,0.35) ) #+ #expre
   #       legend.key.height = unit(0.1, 'cm'))
 g17 = plotG(df, 'St', 'Schmidt stability (J/m2)', ylimit = c(500,950))
 g18 = plotG(df, 'CumPP', 'Cum. precipitation (mm)', ylimit = c(600,1300))
+g19 = plotG(df, 'sum.discharge', 'Cum. discharge (m3/d)', ylimit = c(5700,18000))
 
 
 library(ggpubr)
 df.prior = df %>%
   mutate('class' = ifelse(year < 2010, 'prior 2010','post 2010')) %>%
   dplyr::select(class, AF, strat_duration, Jz, Jv, Days.1.mg.L, discharge, ice_duration, Clearwater.Duration, pH, PO4.P_surf, NO3.NO2.N_surf, RSi, Spiny,
-                St, CumPP)
+                St, CumPP, sum.discharge)
 m.df.prior <- reshape2::melt(df.prior, id = 'class')
 
 compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
@@ -171,6 +173,7 @@ p10 = plotBP('RSi', '')
 p12 = plotBP('ice_duration', '')
 p13 = plotBP('St', '')
 p14 = plotBP('CumPP', '')
+p15 = plotBP('sum.discharge', '')
 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
 # m.df.prior %>% dplyr::filter(variable == 'AF') %>% dplyr::group_by(class) %>% summarise(mean = mean(value), sd = sd(value))
@@ -310,10 +313,13 @@ plt10 <- (g16 + ggtitle("G)")+ p12) + plot_layout(widths = c(2, 1)) & scale_y_co
 # plt10 <- (g11 + ggtitle("J)")+ p7) + plot_layout(widths = c(2, 1)) # pH
 plt11 <- (g17 + ggtitle("I)")+ p13) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g17)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Schmidt
 plt12 <- (g18 + ggtitle("J)")+ p14) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g18)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
+plt13 <- (g13 + ggtitle("K)")+ p9) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g13)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
+plt14 <- (g19 + ggtitle("L)")+ p15) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g19)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
+
 
 # Final figure
-fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt4 | plt2) / (plt10 | plt6)/ (plt11 | plt12) &
+fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt4 | plt2) / (plt10 | plt6)/ (plt11 | plt12) / (plt13 | plt14)&
   theme(plot.title = element_text(size = 7, face = "bold"))
 
-ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 6)
+ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 7)
 
