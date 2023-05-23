@@ -118,7 +118,7 @@ g6 = plotG(df, 'linear','Stratification (days)', ylimit = c(120,250)) +
   geom_point(aes(x = year, y = linear), size = 1) +
   geom_line(aes(x = year, y = spline), linetype = 2, color = 'red3', size = 0.3)
 
-g7 = plotG(df, 'Jz', 'DO flux (mg/L/d)', ylimit = c(0.1,0.35) ) #+ #expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")
+g7 = plotG(df, 'Jz', 'DO flux (mg/L/d)', ylimit = c(0.1,0.25) ) #+ #expression("Volumetric flux ["*g~m^{-3}*d^{-1}*"]")
   # geom_smooth(aes(year, Jv, col = 'black'), method = "loess", size = 0.3, alpha = 0.2) +
   # geom_line(aes(year, Ja , col = 'gold'), size = 0.3) +
   # geom_point(aes(year, Ja , col = 'gold'), size = 1) +
@@ -313,13 +313,18 @@ plt10 <- (g16 + ggtitle("G)")+ p12) + plot_layout(widths = c(2, 1)) & scale_y_co
 # plt10 <- (g11 + ggtitle("J)")+ p7) + plot_layout(widths = c(2, 1)) # pH
 plt11 <- (g17 + ggtitle("I)")+ p13) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g17)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Schmidt
 plt12 <- (g18 + ggtitle("J)")+ p14) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g18)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
-plt13 <- (g13 + ggtitle("K)")+ p9) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g13)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
-plt14 <- (g19 + ggtitle("L)")+ p15) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g19)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
+plt13 <- (g13 + ggtitle("K)")+ p9) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g13)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # NO3
+plt14 <- (g19 + ggtitle("L)")+ p15) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g19)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Discharge
 
 
 # Final figure
-fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt4 | plt2) / (plt10 | plt6)/ (plt11 | plt12) / (plt13 | plt14)&
+fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt3 | plt5) / (plt5 | plt4) / (plt2 | plt11)/ (plt6 | plt13) / (plt12 | plt14)&
   theme(plot.title = element_text(size = 7, face = "bold"))
 
-ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 7)
+ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
+
+fig.plt <- (plt1 | plt9 | plt3) / ( plt5 | plt3 | plt5) / (plt5 | plt4 | plt2) / (plt11 | plt6 | plt13) / (plt12 | plt14 | plt10)&
+  theme(plot.title = element_text(size = 7, face = "bold"))
+ggsave(plot = fig.plt , 'figs_publication/Fig1a_test.png', dpi = 500, units = 'in', width = 8, height = 7)
+# ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
 
