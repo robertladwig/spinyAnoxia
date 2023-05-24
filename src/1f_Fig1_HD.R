@@ -27,6 +27,8 @@ nutrients <- read_csv('data_processed/nutrients.csv')
 spiny <- read_csv('data_processed/spiny.csv')
 physics <- read_csv('data_processed/physical_timings.csv')
 rainfall <- read_csv('data_processed/precipitation.csv')
+zoops <- read_csv('data_processed/0r_zoop_abundances.csv')
+phyto <- read_csv('data_processed/3a_phyto_annual_average_biomass.csv')
 
 # Define colors
 col.pre <- "steelblue"
@@ -68,6 +70,16 @@ df.rainfall <- rainfall %>%
   dplyr::select(c(wateryear, cumsum_pp)) %>%
   rename(year = wateryear, CumPP = cumsum_pp)
 
+df.zoops <- zoops %>%
+  dplyr::filter(year4 >= 1995 & year4 <= 2021) %>%
+  rename(year = year4, Mendotae = `Daphnia Mendotae`, Pulicaria =  `Daphnia Pulicaria`, Bythrophes = `Bythotrephes Longimanus`) %>%
+  dplyr::select(year, tot.zoops.no.SWF, Mendotae, Pulicaria, Bythrophes, Daphnia)
+
+df.phyto <- phyto %>%
+  dplyr::filter(Year >= 1995 & Year <= 2021) %>%
+  rename(year = Year) %>%
+  dplyr::select(year, Bacillariophyta, Cyanophyta)
+
 # Merge dataframes
 df <- merge(df.strat, df.anoxic, by = 'year')
 df <- merge(df, df.flux, by = 'year')
@@ -79,6 +91,8 @@ df <- merge(df, df.spiny, by = 'year')
 df <- merge(df, df.physics, by = 'year')
 df <- merge(df, df.ssi, by = 'year')
 df <- merge(df, df.rainfall, by = 'year')
+df <- merge(df, df.zoops, by = 'year')
+df <- merge(df, df.phyto, by = 'year')
 
 # Define colors
 cool.col <- c("#00AFBB", "#E7B800", "#FC4E07")
@@ -132,13 +146,18 @@ g7 = plotG(df, 'Jz', 'DO flux (mg/L/d)', ylimit = c(0.1,0.25) ) #+ #expression("
 g17 = plotG(df, 'St', 'Schmidt stability (J/m2)', ylimit = c(500,950))
 g18 = plotG(df, 'CumPP', 'Cum. precipitation (mm)', ylimit = c(600,1300))
 g19 = plotG(df, 'sum.discharge', 'Cum. discharge (m3/d)', ylimit = c(5700,18000))
+g20 = plotG(df, 'Mendotae', 'D. Mendotae (g/m2)', ylimit = c(13900,1800000))
+g21 = plotG(df, 'Pulicaria', 'D. Pulicaria (g/m2)', ylimit = c(23500,2500000))
+g22 = plotG(df, 'Bythrophes', 'Spiny water flea (g/m2)', ylimit = c(0,12000))
+g23 = plotG(df, 'Bacillariophyta', 'Diatoms (g/m2)', ylimit = c(0,3))
+g24 = plotG(df, 'Cyanophyta', 'Cyanobacteria (g/m2)', ylimit = c(0,5))
 
 
 library(ggpubr)
 df.prior = df %>%
   mutate('class' = ifelse(year < 2010, 'prior 2010','post 2010')) %>%
   dplyr::select(class, AF, strat_duration, Jz, Jv, Days.1.mg.L, discharge, ice_duration, Clearwater.Duration, pH, PO4.P_surf, NO3.NO2.N_surf, RSi, Spiny,
-                St, CumPP, sum.discharge)
+                St, CumPP, sum.discharge, Bythrophes, Pulicaria, Mendotae, Bacillariophyta, Cyanophyta)
 m.df.prior <- reshape2::melt(df.prior, id = 'class')
 
 compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
@@ -174,6 +193,11 @@ p12 = plotBP('ice_duration', '')
 p13 = plotBP('St', '')
 p14 = plotBP('CumPP', '')
 p15 = plotBP('sum.discharge', '')
+p16 = plotBP('Mendotae', '')
+p17 = plotBP('Pulicaria', '')
+p18 = plotBP('Bythrophes', '')
+p19 = plotBP('Bacillariophyta', '')
+p20 = plotBP('Cyanophyta', '')
 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
 # m.df.prior %>% dplyr::filter(variable == 'AF') %>% dplyr::group_by(class) %>% summarise(mean = mean(value), sd = sd(value))
@@ -189,6 +213,16 @@ m.df.prior %>% dplyr::filter(variable == 'Jv') %>% dplyr::group_by(class) %>% su
 
 sddef = m.df.prior %>% dplyr::filter(variable == 'Jv')%>% group_by(class) %>% summarise(mean = mean(value),
                                                                                 sdv= sd(value))
+sddef$mean[1] - sddef$mean[2]
+sqrt(sddef$sdv[1]**2 - sddef$sdv[2]**2)
+
+sddef = m.df.prior %>% dplyr::filter(variable == 'Bacillariophyta')%>% group_by(class) %>% summarise(mean = mean(value),
+                                                                                        sdv= sd(value))
+sddef$mean[1] - sddef$mean[2]
+sqrt(sddef$sdv[1]**2 - sddef$sdv[2]**2)
+
+sddef = m.df.prior %>% dplyr::filter(variable == 'Mendotae')%>% group_by(class) %>% summarise(mean = mean(value),
+                                                                                                     sdv= sd(value))
 sddef$mean[1] - sddef$mean[2]
 sqrt(sddef$sdv[1]**2 - sddef$sdv[2]**2)
 
@@ -301,20 +335,27 @@ g5 <- plotG(df, 'AF', 'Anoxic factor (days)', ylimit = c(40,80)) +
 
 
 plt1 <- (g5 + ggtitle("A)") + p1)  + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g5)$y$range$range, expand = expansion(mult = c(0.05,0.2))) #anoxic
-plt2 <- (g6 + ggtitle("F)")+ p2) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g6)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # strat
-plt3 <- (g7 + ggtitle("C)")+ p3) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g7)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # do flux
-plt4 <- (g10 + ggtitle("E)")+ p6) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g10)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # clear
+plt2 <- (g6 + ggtitle("J)")+ p2) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g6)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # strat
+plt3 <- (g7 + ggtitle("B)")+ p3) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g7)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # do flux
+plt4 <- (g10 + ggtitle("I)")+ p6) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g10)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # clear
 plt5 <- (g8 + ggtitle("D)")+ p4) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g8)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # biomass
-plt6 <- (g12 + ggtitle("H)")+ p8) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g12)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # P
+plt6 <- (g12 + ggtitle("M)")+ p8) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g12)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # P
 plt9 <- (g15 + ggtitle("B)")+ p11) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g15)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Spiny
-plt10 <- (g16 + ggtitle("G)")+ p12) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g16)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Ice
+plt10 <- (g16 + ggtitle("L)")+ p12) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g16)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Ice
 # plt7 <- (g13 + ggtitle("H)")+ p9) + plot_layout(widths = c(2, 1)) # N
 # plt8 <- (g14 + ggtitle("I)")+ p10) + plot_layout(widths = c(2, 1)) # Si
 # plt10 <- (g11 + ggtitle("J)")+ p7) + plot_layout(widths = c(2, 1)) # pH
-plt11 <- (g17 + ggtitle("I)")+ p13) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g17)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Schmidt
-plt12 <- (g18 + ggtitle("J)")+ p14) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g18)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
-plt13 <- (g13 + ggtitle("K)")+ p9) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g13)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # NO3
+plt11 <- (g17 + ggtitle("K)")+ p13) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g17)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Schmidt
+plt12 <- (g18 + ggtitle("O)")+ p14) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g18)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
+plt13 <- (g13 + ggtitle("N)")+ p9) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g13)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # NO3
 plt14 <- (g19 + ggtitle("L)")+ p15) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g19)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Discharge
+
+plt15 <- (g20 + ggtitle("G)")+ p16) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g20)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # mendotae
+plt16 <- (g21 + ggtitle("H)")+ p17) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g21)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # pulicaria
+plt17 <- (g22 + ggtitle("C)")+ p18) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g22)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # bythrophes
+
+plt18 <- (g23 + ggtitle("E)")+ p19) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g23)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # diatoms
+plt19 <- (g24 + ggtitle("F)")+ p20) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g24)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # cyanos
 
 
 # Final figure
@@ -323,8 +364,8 @@ fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt3 | plt5) / (plt5 | plt4) / (plt2
 
 ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
 
-fig.plt <- (plt1 | plt9 | plt3) / ( plt5 | plt3 | plt5) / (plt5 | plt4 | plt2) / (plt11 | plt6 | plt13) / (plt12 | plt14 | plt10)&
+fig.plt <- (plt1 | plt3 | plt17) / ( plt5 | plt18 | plt19) / (plt15 | plt16 | plt4) / (plt2 | plt11 | plt10) / (plt6 | plt13 | plt12 )&
   theme(plot.title = element_text(size = 7, face = "bold"))
-ggsave(plot = fig.plt , 'figs_publication/Fig1a_test.png', dpi = 500, units = 'in', width = 8, height = 7)
+ggsave(plot = fig.plt , 'figs_publication/Fig1a_3x4.png', dpi = 500, units = 'in', width = 9, height = 7)
 # ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
 
