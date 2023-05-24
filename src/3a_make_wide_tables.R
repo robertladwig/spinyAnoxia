@@ -2,13 +2,17 @@
 # pull out just the info of interest from LTER data, and make it a wide table.
 # not sure if biovolume or biomass is a better metric. 
 # maybe biomass, people seem to talk about that more? simple units?
+# also get annual average values for Robert/reviewers
 
 library(tidyr)
 library(lubridate)
+library(data.table)
 
 phyto <- readRDS(file = "data_input/0a_phyto_knb-lter-ntl.88.30.rds")
 
 created.file <- "data_processed/3a_phyto_list.rds"
+
+created.file.annual.avs <- "data_processed/3a_phyto_annual_average_biomass.csv"
 
 # ----
 
@@ -17,7 +21,7 @@ created.file <- "data_processed/3a_phyto_list.rds"
 
 problem.day <- which(phyto$Date == parse_date_time("2011-07-25","ymd", "Etc/GMT-5"))
 
-View(phyto[problem.day, ])
+# View(phyto[problem.day, ])
 
 problem.row <- 5423
 
@@ -63,6 +67,24 @@ phyto.total$date <- parse_date_time(x = phyto.total$date, orders = "ymd")
 
 my.phyto <- list("tot" = phyto.total, "div" = phyto.division, "gen" = phyto.genus, "tax" = phyto.name)
 
+# ---- annual averages for models ----
+
+annual.aves <- my.phyto$div |>
+  t()
+
+annual.aves <- data.table("Year" = year(parse_date_time(row.names(annual.aves), orders = "ymd")), annual.aves)
+
+annual.aves <- melt(data = annual.aves, id.vars = "Year", variable.name = "Division", value.name = "biomass")
+annual.aves <- dcast(data = annual.aves, formula = Year ~ Division, value.var = "biomass", fun.aggregate = mean, na.rm = T)
+
+annual.aves$Total.Mean.Biomass.mg.L <- rowSums(annual.aves[ ,-1], na.rm = T)
+
+annual.aves <- as.matrix(annual.aves)
+annual.aves[is.na(annual.aves)] <- 0
+
 # ----
 cat(created.file)
 saveRDS(object = my.phyto, file = created.file)
+
+cat(created.file.annual.avs)
+write.csv(x = annual.aves, file = created.file.annual.avs, row.names = F)
