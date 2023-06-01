@@ -94,6 +94,9 @@ df <- merge(df, df.rainfall, by = 'year')
 df <- merge(df, df.zoops, by = 'year')
 df <- merge(df, df.phyto, by = 'year')
 
+
+# df = df %>% dplyr::filter(year < 2015)
+
 # Define colors
 cool.col <- c("#00AFBB", "#E7B800", "#FC4E07")
 

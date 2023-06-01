@@ -105,7 +105,9 @@ df <- merge(df, df.phyto, by = 'year')
 str(df)
 head(df)
 
-df.red <- df[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
+df_red2 = df %>% dplyr::filter(year < 2015)
+
+df.red <- df_red2[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
                  "ice_on" , "ice_off" , "ice_duration" ,
                  "Jz" , "Jv" , "Ja" , "Days.1.mg.L",
                  # "Days.0.5.mg.L" , "Days.1.mg.L" , "Days.1.5.mg.L" ,
