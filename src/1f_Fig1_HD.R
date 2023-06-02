@@ -148,7 +148,7 @@ g7 = plotG(df, 'Jz', 'DO flux (mg/L/d)', ylimit = c(0.1,0.25) ) #+ #expression("
   #       legend.key.height = unit(0.1, 'cm'))
 g17 = plotG(df, 'St', 'Schmidt stability (J/m2)', ylimit = c(500,950)) #bquote('Number VS'~Number^2)
 g17 = plotG(df, 'St', bquote('Schmidt stability (J/'~m^2~')'), ylimit = c(500,950)) #bquote('Number VS'~Number^2)
-g18 = plotG(df, 'CumPP', 'Cum. precipitation (mm)', ylimit = c(600,1300))
+g18 = plotG(df, 'CumPP', 'Precipitation (mm)', ylimit = c(600,1300))
 g19 = plotG(df, 'sum.discharge', bquote('Cum. discharge ('~m^3~'/d)'), ylimit = c(5700,18000))
 g20 = plotG(df, 'Mendotae', 'D. Mendotae (mg/L)', ylimit = c(0,30))
 g21 = plotG(df, 'Pulicaria', 'D. Pulicaria (mg/L)', ylimit = c(0,90))
