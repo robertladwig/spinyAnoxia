@@ -202,11 +202,11 @@ Nitrate = 14# 14*2 + 16 *5
 Phosphate = 31 #31 + 16 * 4
 
 volume_epi = hypso %>%
-  filter(Depth_meter  <= 13) %>%
+  dplyr::filter(Depth_meter   <= 13) %>%
   summarise(sum = sum(Area_meterSquared))
 
 volume_hypo = hypso %>%
-  filter(Depth_meter  > 13) %>%
+  dplyr::filter(Depth_meter   > 13) %>%
   summarise(sum = sum(Area_meterSquared))
 
 df.stochio = df.stochio %>%
@@ -221,3 +221,16 @@ ggplot(df.stochio) +
   xlab("") + ylab('N:P (molar)') + labs(colour = 'Strata')+
   theme_minimal()
 
+df.stochio_year = df.stochio %>%
+  mutate(year = year(datetime),
+         stoch_surf = tn_surf_molar / tp_surf_molar,
+         stoch_bottom = tn_bottom_molar / tp_bottom_molar) %>%
+  dplyr::select(year, stoch_surf, stoch_bottom) %>%
+  group_by(year) %>%
+  summarise_all(mean)
+
+ggplot(df.stochio_year) +
+  geom_line(aes(year, stoch_surf, col = 'surface')) + 
+  geom_line(aes(year, stoch_bottom, col = 'bottom')) 
+
+write_csv(df.stochio_year, '../data_processed/stoichiometry.csv')
