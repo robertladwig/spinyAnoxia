@@ -368,7 +368,7 @@ fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt3 | plt5) / (plt5 | plt4) / (plt2
 
 ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
 
-fig.plt <- (plt1 | plt3 | plt17) / ( plt5 | plt18 | plt19) / (plt15 | plt16 | plt4) / (plt2 | plt11 | plt10) / (plt6 | plt13 | plt12 )&
+fig.plt <- (plt1 | plt3 | plt4) / (plt17 | plt15 | plt16   ) / ( plt5 | plt18 | plt19)  / (plt2 | plt11 | plt10) / (plt6 | plt13 | plt12 )&
   theme(plot.title = element_text(size = 7, face = "bold"))
 ggsave(plot = fig.plt , 'figs_publication/Fig1a_3x4.png', dpi = 500, units = 'in', width = 9, height = 7)
 # ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
