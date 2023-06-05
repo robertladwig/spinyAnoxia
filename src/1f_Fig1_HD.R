@@ -82,7 +82,7 @@ df.phyto <- phyto %>%
   dplyr::select(year, Bacillariophyta, Cyanophyta)
 
 df.stoicho <- stoicho %>%
-  dplyr::filter(year >= 1995 & year <= 2021) 
+  dplyr::filter(year >= 1995 & year <= 2021)
 
 # Merge dataframes
 df <- merge(df.strat, df.anoxic, by = 'year')
@@ -159,7 +159,7 @@ g7 = plotG(df, 'Jz', 'DO flux (mg/L/d)', ylimit = c(0.1,0.25) ) #+ #expression("
 g17 = plotG(df, 'St', 'Schmidt stability (J/m2)', ylimit = c(500,950)) #bquote('Number VS'~Number^2)
 g17 = plotG(df, 'St', bquote('Schmidt stability (J/'~m^2~')'), ylimit = c(500,950)) #bquote('Number VS'~Number^2)
 g18 = plotG(df, 'CumPP', 'Precipitation (mm)', ylimit = c(600,1300))
-g19 = plotG(df, 'sum.discharge', bquote('Cum. discharge ('~m^3~'/d)'), ylimit = c(5700,18000))
+g19 = plotG(df, 'sum.discharge', bquote('Discharge ('~m^3~'/d)'), ylimit = c(5700,18000))
 g20 = plotG(df, 'Mendotae', 'D. Mendotae (mg/L)', ylimit = c(0,30))
 g21 = plotG(df, 'Pulicaria', 'D. Pulicaria (mg/L)', ylimit = c(0,90))
 g22 = plotG(df, 'Bythrophes', 'Spiny water flea (mg/L)', ylimit = c(0,300))
@@ -171,6 +171,7 @@ g25 = plotG(df, 'stoch_surf ', 'N:P (molar)', ylimit = c(0,5)) +
 g26 = plotG(df, 'stoch_surf ', 'N:P (molar)', ylimit = c(0,7.5)) +
   geom_line(aes(year, stoch_bottom  ), linetype = 'dashed', size = 0.3) +
   geom_point(aes(year, stoch_bottom ), size = 1)
+g27 = plotG(df, 'stoch_surf ', 'N:P (molar)', ylimit = c(0,7.5))
 
 library(ggpubr)
 df.prior = df %>%
@@ -358,27 +359,29 @@ g5 <- plotG(df, 'AF', 'Anoxic factor (days)', ylimit = c(40,80)) +
 plt1 <- (g5 + ggtitle("A)") + p1)  + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g5)$y$range$range, expand = expansion(mult = c(0.05,0.2))) #anoxic
 plt2 <- (g6 + ggtitle("J)")+ p2) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g6)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # strat
 plt3 <- (g7 + ggtitle("B)")+ p3) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g7)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # do flux
-plt4 <- (g10 + ggtitle("I)")+ p6) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g10)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # clear
-plt5 <- (g8 + ggtitle("D)")+ p4) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g8)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # biomass
+plt4 <- (g10 + ggtitle("C)")+ p6) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g10)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # clear
+plt5 <- (g8 + ggtitle("G)")+ p4) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g8)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # biomass
 plt6 <- (g12 + ggtitle("M)")+ p8) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g12)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # P
-plt9 <- (g15 + ggtitle("B)")+ p11) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g15)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Spiny
+plt9 <- (g15 + ggtitle("D)")+ p11) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g15)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Spiny
 plt10 <- (g16 + ggtitle("L)")+ p12) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g16)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Ice
 # plt7 <- (g13 + ggtitle("H)")+ p9) + plot_layout(widths = c(2, 1)) # N
 # plt8 <- (g14 + ggtitle("I)")+ p10) + plot_layout(widths = c(2, 1)) # Si
 # plt10 <- (g11 + ggtitle("J)")+ p7) + plot_layout(widths = c(2, 1)) # pH
 plt11 <- (g17 + ggtitle("K)")+ p13) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g17)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Schmidt
-plt12 <- (g18 + ggtitle("O)")+ p14) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g18)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
+plt12 <- (g18 + ggtitle("A)")+ p14) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g18)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Rainfall
 plt13 <- (g13 + ggtitle("N)")+ p9) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g13)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # NO3
-plt14 <- (g19 + ggtitle("L)")+ p15) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g19)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Discharge
+plt14 <- (g19 + ggtitle("B)")+ p15) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g19)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Discharge
 
-plt15 <- (g20 + ggtitle("G)")+ p16) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g20)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # mendotae
-plt16 <- (g21 + ggtitle("H)")+ p17) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g21)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # pulicaria
-plt17 <- (g22 + ggtitle("C)")+ p18) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g22)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # bythrophes
+plt15 <- (g20 + ggtitle("E)")+ p16) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g20)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # mendotae
+plt16 <- (g21 + ggtitle("F)")+ p17) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g21)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # pulicaria
+plt17 <- (g22 + ggtitle("D)")+ p18) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g22)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # bythrophes
 
-plt18 <- (g23 + ggtitle("E)")+ p19) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g23)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # diatoms
-plt19 <- (g24 + ggtitle("F)")+ p20) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g24)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # cyanos
+plt18 <- (g23 + ggtitle("H)")+ p19) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g23)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # diatoms
+plt19 <- (g24 + ggtitle("I)")+ p20) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g24)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # cyanos
 
-plt20 <- (g26 + ggtitle("F)")+ p22) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g26)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # cyanos
+plt20 <- (g26 + ggtitle("O)")+ p22) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g26)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # stoich
+
+plt21 <- (g27 + ggtitle("A)")+ p22) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g27)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # stoich
 
 # Final figure
 fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt3 | plt5) / (plt5 | plt4) / (plt2 | plt11)/ (plt6 | plt13) / (plt12 | plt14)&
@@ -386,8 +389,14 @@ fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt3 | plt5) / (plt5 | plt4) / (plt2
 
 ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
 
-fig.plt <- (plt1 | plt3 | plt4) / (plt17 | plt15 | plt16   ) / ( plt5 | plt18 | plt19)  / (plt2 | plt11 | plt10) / (plt6 | plt13 | plt12 )&
+fig.plt <- (plt1 | plt3 | plt4) / (plt17 | plt15 | plt16   ) / ( plt5 | plt18 | plt19)  / (plt2 | plt11 | plt10) / (plt6 | plt13 | plt20 )&
   theme(plot.title = element_text(size = 7, face = "bold"))
 ggsave(plot = fig.plt , 'figs_publication/Fig1a_3x4.png', dpi = 500, units = 'in', width = 9, height = 7)
 # ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
+
+fig.plt <- (plt12 | plt14 ) &
+  theme(plot.title = element_text(size = 7, face = "bold"))
+ggsave(plot = fig.plt , 'figs_publication/SI_Fig2.png', dpi = 500, units = 'in', width = 9, height = 2)
+plt12
+plt14
 

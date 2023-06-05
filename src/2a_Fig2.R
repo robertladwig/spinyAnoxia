@@ -43,6 +43,8 @@ zoops <- read_csv('../data_processed/0r_annual_zoop_biomass.csv')
 
 phyto <- read_csv('../data_processed/3a_phyto_annual_average_biomass.csv')
 
+stoicho <- read_csv('../data_processed/stoichiometry.csv')
+
 col.pre <- "steelblue"
 col.post <- "orange3"
 
@@ -90,6 +92,10 @@ df.phyto <- phyto %>%
   rename(year = Year) %>%
   dplyr::select(year, Bacillariophyta, Cyanophyta)
 
+df.stoicho <- stoicho %>%
+  dplyr::filter(year >= 1995 & year <= 2021)
+
+
 df <- merge(df.physics, df.anoxic, by = 'year')
 df <- merge(df, df.flux, by = 'year')
 df <- merge(df, df.biomass, by = 'year')
@@ -101,11 +107,16 @@ df <- merge(df, df.ssi, by = 'year')
 df <- merge(df, df.rainfall, by = 'year')
 df <- merge(df, df.zoops, by = 'year')
 df <- merge(df, df.phyto, by = 'year')
+df <- merge(df, df.stoicho, by = 'year')
+
+df = df %>%
+  mutate(stoch_surf_summer = ( NO3.NO2.N_surf /1000 * 14) / ( PO4.P_surf / 1000 *31 ),
+         stoch_bottom_summer = ( NO3.NO2.N_bot /1000 * 14) / ( PO4.P_bot / 1000 *31 ))
 
 str(df)
 head(df)
 
-df_red2 = df %>% dplyr::filter(year < 2015)
+df_red2 = df #%>% dplyr::filter(year < 2015)
 
 df.red <- df_red2[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
                  "ice_on" , "ice_off" , "ice_duration" ,
@@ -116,6 +127,7 @@ df.red <- df_red2[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
                  "Clearwater.Duration"  , "Bythrophes" , #"Bythrophes",
                   "PO4.P_surf", "PO4.P_bot", "NO3.NO2.N_surf", "NO3.NO2.N_bot", "RSi",
                  "max.ssi", 'CumPP', 'Mendotae', 'Pulicaria', 'Bacillariophyta', 'Cyanophyta')]
+                 # 'stoch_bottom', 'stoch_surf')]
 sc.info <- scale(df.red)
 # df.data.spiny = df.red %>%
   # mutate(Spiny = (ifelse(Spiny > 0, 1, 0)))
