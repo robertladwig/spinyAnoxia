@@ -105,7 +105,7 @@ df = df %>%
          stoch_bottom_summer = ( NO3.NO2.N_bot /1000 * 14) / ( PO4.P_bot / 1000 *31 ))
 
 
-# df = df %>% dplyr::filter(year < 2015)
+df = df %>% dplyr::filter(year < 2015)
 
 # Define colors
 cool.col <- c("#00AFBB", "#E7B800", "#FC4E07")
@@ -160,8 +160,8 @@ g17 = plotG(df, 'St', 'Schmidt stability (J/m2)', ylimit = c(500,950)) #bquote('
 g17 = plotG(df, 'St', bquote('Schmidt stability (J/'~m^2~')'), ylimit = c(500,950)) #bquote('Number VS'~Number^2)
 g18 = plotG(df, 'CumPP', 'Precipitation (mm)', ylimit = c(600,1300))
 g19 = plotG(df, 'sum.discharge', bquote('Discharge ('~m^3~'/d)'), ylimit = c(5700,18000))
-g20 = plotG(df, 'Mendotae', 'D. Mendotae (mg/L)', ylimit = c(0,30))
-g21 = plotG(df, 'Pulicaria', 'D. Pulicaria (mg/L)', ylimit = c(0,90))
+g20 = plotG(df, 'Mendotae', 'D. mendotae (mg/L)', ylimit = c(0,30))
+g21 = plotG(df, 'Pulicaria', 'D. pulicaria (mg/L)', ylimit = c(0,90))
 g22 = plotG(df, 'Bythrophes', 'Spiny water flea (mg/L)', ylimit = c(0,300))
 g23 = plotG(df, 'Bacillariophyta', 'Diatoms (mg/L)', ylimit = c(0,3))
 g24 = plotG(df, 'Cyanophyta', 'Cyanobacteria (mg/L)', ylimit = c(0,5))
@@ -391,7 +391,7 @@ ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', w
 
 fig.plt <- (plt1 | plt3 | plt4) / (plt17 | plt15 | plt16   ) / ( plt5 | plt18 | plt19)  / (plt2 | plt11 | plt10) / (plt6 | plt13 | plt20 )&
   theme(plot.title = element_text(size = 7, face = "bold"))
-ggsave(plot = fig.plt , 'figs_publication/Fig1a_3x4.png', dpi = 500, units = 'in', width = 9, height = 7)
+ggsave(plot = fig.plt , 'figs_publication/Fig1a_3x4_si.png', dpi = 500, units = 'in', width = 9.5, height = 7)
 # ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
 
 fig.plt <- (plt12 | plt14 ) &
