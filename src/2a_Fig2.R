@@ -11,7 +11,7 @@ library(broom)
 library(ggpmisc)
 library(patchwork)
 library(Boruta)
-library(caret)
+# library(caret)
 library(relaimpo)
 library(corrplot)
 library(RColorBrewer)
@@ -39,7 +39,7 @@ ssi <- read_csv('../data_processed/ssi.csv')
 
 rainfall <- read_csv('../data_processed/precipitation.csv')
 
-zoops <- read_csv('../data_processed/0r_zoop_abundances.csv')
+zoops <- read_csv('../data_processed/0r_annual_zoop_biomass.csv')
 
 phyto <- read_csv('../data_processed/3a_phyto_annual_average_biomass.csv')
 
@@ -105,13 +105,15 @@ df <- merge(df, df.phyto, by = 'year')
 str(df)
 head(df)
 
-df.red <- df[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
+df_red2 = df %>% dplyr::filter(year < 2015)
+
+df.red <- df_red2[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
                  "ice_on" , "ice_off" , "ice_duration" ,
-                 "Jz" , "Jv" , "Ja" ,
-                 "Days.0.5.mg.L" , "Days.1.mg.L" , "Days.1.5.mg.L" ,
-                 "Days.2.mg.L" , "Days.3.mg.L" ,
+                 "Jz" , "Jv" , "Ja" , "Days.1.mg.L",
+                 # "Days.0.5.mg.L" , "Days.1.mg.L" , "Days.1.5.mg.L" ,
+                 # "Days.2.mg.L" , "Days.3.mg.L" ,
                  "sum.discharge" ,# "max.discharge" , "min.discharge" ,
-                 "Clearwater.Duration"  , "Bythrophes" ,
+                 "Clearwater.Duration"  , "Bythrophes" , #"Bythrophes",
                   "PO4.P_surf", "PO4.P_bot", "NO3.NO2.N_surf", "NO3.NO2.N_bot", "RSi",
                  "max.ssi", 'CumPP', 'Mendotae', 'Pulicaria', 'Bacillariophyta', 'Cyanophyta')]
 sc.info <- scale(df.red)
@@ -147,8 +149,16 @@ sum.hypo1 <-summary(hypo1)
 step(hypo1)
 
 
-hypo1 <- lm(AF ~ strat_off + ice_duration + Days.1.mg.L + PO4.P_surf +
-              PO4.P_bot + Bythrophes , data = hyp.data)
+
+hypo1 <- lm(AF ~ strat_off + strat_duration + ice_duration + Days.1.mg.L + PO4.P_surf + Clearwater.Duration +
+              PO4.P_bot + Bythrophes + Bacillariophyta, data = hyp.data)
+summary(hypo1)
+
+hypo1 <- lm(AF ~ strat_off + Days.1.mg.L + PO4.P_surf , data = hyp.data)
+summary(hypo1)
+
+hypo1 <- lm(AF ~ strat_off + Days.1.mg.L + PO4.P_surf +Bythrophes , data = hyp.data)
+summary(hypo1)
 
 # hypo1 <- lm(AF ~ strat_off  + Days.1.5.mg.L + Spiny , data = hyp.data)
 # glm(AF ~ strat_off  + Days.1.5.mg.L + Spiny , data = hyp.data)

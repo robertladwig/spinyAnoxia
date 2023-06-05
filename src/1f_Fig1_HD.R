@@ -10,7 +10,7 @@ library(broom)
 library(ggpmisc)
 library(patchwork)
 library(Boruta)
-library(caret)
+# library(caret)
 library(relaimpo)
 library(corrplot)
 library(RColorBrewer)
@@ -27,8 +27,9 @@ nutrients <- read_csv('data_processed/nutrients.csv')
 spiny <- read_csv('data_processed/spiny.csv')
 physics <- read_csv('data_processed/physical_timings.csv')
 rainfall <- read_csv('data_processed/precipitation.csv')
-zoops <- read_csv('data_processed/0r_zoop_abundances.csv')
+zoops <- read_csv('data_processed/0r_annual_zoop_biomass.csv')
 phyto <- read_csv('data_processed/3a_phyto_annual_average_biomass.csv')
+stoicho <- read_csv('data_processed/stoichiometry.csv')
 
 # Define colors
 col.pre <- "steelblue"
@@ -80,6 +81,9 @@ df.phyto <- phyto %>%
   rename(year = Year) %>%
   dplyr::select(year, Bacillariophyta, Cyanophyta)
 
+df.stoicho <- stoicho %>%
+  dplyr::filter(year >= 1995 & year <= 2021) 
+
 # Merge dataframes
 df <- merge(df.strat, df.anoxic, by = 'year')
 df <- merge(df, df.flux, by = 'year')
@@ -93,6 +97,15 @@ df <- merge(df, df.ssi, by = 'year')
 df <- merge(df, df.rainfall, by = 'year')
 df <- merge(df, df.zoops, by = 'year')
 df <- merge(df, df.phyto, by = 'year')
+
+df <- merge(df, df.stoicho, by = 'year')
+
+df = df %>%
+  mutate(stoch_surf_summer = ( NO3.NO2.N_surf /1000 * 14) / ( PO4.P_surf / 1000 *31 ),
+         stoch_bottom_summer = ( NO3.NO2.N_bot /1000 * 14) / ( PO4.P_bot / 1000 *31 ))
+
+
+# df = df %>% dplyr::filter(year < 2015)
 
 # Define colors
 cool.col <- c("#00AFBB", "#E7B800", "#FC4E07")
@@ -143,21 +156,28 @@ g7 = plotG(df, 'Jz', 'DO flux (mg/L/d)', ylimit = c(0.1,0.25) ) #+ #expression("
   #       legend.title = element_blank(),
   #       legend.background = element_rect(fill = "transparent"),
   #       legend.key.height = unit(0.1, 'cm'))
-g17 = plotG(df, 'St', 'Schmidt stability (J/m2)', ylimit = c(500,950))
-g18 = plotG(df, 'CumPP', 'Cum. precipitation (mm)', ylimit = c(600,1300))
-g19 = plotG(df, 'sum.discharge', 'Cum. discharge (m3/d)', ylimit = c(5700,18000))
-g20 = plotG(df, 'Mendotae', 'D. Mendotae (g/m2)', ylimit = c(13900,1800000))
-g21 = plotG(df, 'Pulicaria', 'D. Pulicaria (g/m2)', ylimit = c(23500,2500000))
-g22 = plotG(df, 'Bythrophes', 'Spiny water flea (g/m2)', ylimit = c(0,12000))
-g23 = plotG(df, 'Bacillariophyta', 'Diatoms (g/m2)', ylimit = c(0,3))
-g24 = plotG(df, 'Cyanophyta', 'Cyanobacteria (g/m2)', ylimit = c(0,5))
-
+g17 = plotG(df, 'St', 'Schmidt stability (J/m2)', ylimit = c(500,950)) #bquote('Number VS'~Number^2)
+g17 = plotG(df, 'St', bquote('Schmidt stability (J/'~m^2~')'), ylimit = c(500,950)) #bquote('Number VS'~Number^2)
+g18 = plotG(df, 'CumPP', 'Precipitation (mm)', ylimit = c(600,1300))
+g19 = plotG(df, 'sum.discharge', bquote('Cum. discharge ('~m^3~'/d)'), ylimit = c(5700,18000))
+g20 = plotG(df, 'Mendotae', 'D. Mendotae (mg/L)', ylimit = c(0,30))
+g21 = plotG(df, 'Pulicaria', 'D. Pulicaria (mg/L)', ylimit = c(0,90))
+g22 = plotG(df, 'Bythrophes', 'Spiny water flea (mg/L)', ylimit = c(0,300))
+g23 = plotG(df, 'Bacillariophyta', 'Diatoms (mg/L)', ylimit = c(0,3))
+g24 = plotG(df, 'Cyanophyta', 'Cyanobacteria (mg/L)', ylimit = c(0,5))
+g25 = plotG(df, 'stoch_surf ', 'N:P (molar)', ylimit = c(0,5)) +
+  geom_line(aes(year, stoch_bottom_summer  ), linetype = 'dashed', size = 0.3) +
+  geom_point(aes(year, stoch_bottom_summer ), size = 1)
+g26 = plotG(df, 'stoch_surf ', 'N:P (molar)', ylimit = c(0,7.5)) +
+  geom_line(aes(year, stoch_bottom  ), linetype = 'dashed', size = 0.3) +
+  geom_point(aes(year, stoch_bottom ), size = 1)
 
 library(ggpubr)
 df.prior = df %>%
   mutate('class' = ifelse(year < 2010, 'prior 2010','post 2010')) %>%
   dplyr::select(class, AF, strat_duration, Jz, Jv, Days.1.mg.L, discharge, ice_duration, Clearwater.Duration, pH, PO4.P_surf, NO3.NO2.N_surf, RSi, Spiny,
-                St, CumPP, sum.discharge, Bythrophes, Pulicaria, Mendotae, Bacillariophyta, Cyanophyta)
+                St, CumPP, sum.discharge, Bythrophes, Pulicaria, Mendotae, Bacillariophyta, Cyanophyta,
+                stoch_bottom, stoch_surf)
 m.df.prior <- reshape2::melt(df.prior, id = 'class')
 
 compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
@@ -198,6 +218,7 @@ p17 = plotBP('Pulicaria', '')
 p18 = plotBP('Bythrophes', '')
 p19 = plotBP('Bacillariophyta', '')
 p20 = plotBP('Cyanophyta', '')
+p22 = plotBP('stoch_surf', '')
 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
 # m.df.prior %>% dplyr::filter(variable == 'AF') %>% dplyr::group_by(class) %>% summarise(mean = mean(value), sd = sd(value))
@@ -357,6 +378,7 @@ plt17 <- (g22 + ggtitle("C)")+ p18) + plot_layout(widths = c(2, 1)) & scale_y_co
 plt18 <- (g23 + ggtitle("E)")+ p19) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g23)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # diatoms
 plt19 <- (g24 + ggtitle("F)")+ p20) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g24)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # cyanos
 
+plt20 <- (g26 + ggtitle("F)")+ p22) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g26)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # cyanos
 
 # Final figure
 fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt3 | plt5) / (plt5 | plt4) / (plt2 | plt11)/ (plt6 | plt13) / (plt12 | plt14)&
@@ -364,7 +386,7 @@ fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt3 | plt5) / (plt5 | plt4) / (plt2
 
 ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
 
-fig.plt <- (plt1 | plt3 | plt17) / ( plt5 | plt18 | plt19) / (plt15 | plt16 | plt4) / (plt2 | plt11 | plt10) / (plt6 | plt13 | plt12 )&
+fig.plt <- (plt1 | plt3 | plt4) / (plt17 | plt15 | plt16   ) / ( plt5 | plt18 | plt19)  / (plt2 | plt11 | plt10) / (plt6 | plt13 | plt12 )&
   theme(plot.title = element_text(size = 7, face = "bold"))
 ggsave(plot = fig.plt , 'figs_publication/Fig1a_3x4.png', dpi = 500, units = 'in', width = 9, height = 7)
 # ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)

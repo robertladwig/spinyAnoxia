@@ -174,3 +174,63 @@ for (i in df$year){
 }
 
 write_csv(df, '../data_processed/nutrients.csv')
+
+
+
+df.stochio = merge(df.phos, df.nitrate, by = 'datetime')
+
+ggplot(df.stochio) +
+  geom_line(aes(datetime, tn_surf/tp_surf, col = 'surface')) +
+  geom_line(aes(datetime, tn_bottom/tp_bottom, col = 'bottom'))
+
+ggplot(df.stochio) +
+  geom_line(aes(datetime, tn_surf, col = 'surface')) +
+  geom_line(aes(datetime, tn_bottom, col = 'bottom'))
+
+
+ggplot(df.stochio) +
+  geom_line(aes(datetime, tp_surf, col = 'surface')) +
+  geom_line(aes(datetime, tp_bottom, col = 'bottom'))
+
+# mg/L 
+# N 14 g/mole
+# P 31 g/mole
+# O 16 g/mole
+# NO3-NO2
+Nitrate = 14# 14*2 + 16 *5
+# PO4
+Phosphate = 31 #31 + 16 * 4
+
+volume_epi = hypso %>%
+  dplyr::filter(Depth_meter   <= 13) %>%
+  summarise(sum = sum(Area_meterSquared))
+
+volume_hypo = hypso %>%
+  dplyr::filter(Depth_meter   > 13) %>%
+  summarise(sum = sum(Area_meterSquared))
+
+df.stochio = df.stochio %>%
+  mutate(tn_surf_molar = (tn_surf/ 1000 * Nitrate) * 1,
+         tp_surf_molar = (tp_surf/ 1000 * Phosphate) * 1,
+         tn_bottom_molar = (tn_bottom/ 1000 * Nitrate) * 1,
+         tp_bottom_molar = (tp_bottom/ 1000 * Phosphate) * 1)
+
+ggplot(df.stochio) +
+  geom_line(aes(datetime, tn_surf_molar / tp_surf_molar, col = 'surface')) +
+  geom_line(aes(datetime, tn_bottom_molar / tp_bottom_molar, col = 'bottom')) + 
+  xlab("") + ylab('N:P (molar)') + labs(colour = 'Strata')+
+  theme_minimal()
+
+df.stochio_year = df.stochio %>%
+  mutate(year = year(datetime),
+         stoch_surf = tn_surf_molar / tp_surf_molar,
+         stoch_bottom = tn_bottom_molar / tp_bottom_molar) %>%
+  dplyr::select(year, stoch_surf, stoch_bottom) %>%
+  group_by(year) %>%
+  summarise_all(mean)
+
+ggplot(df.stochio_year) +
+  geom_line(aes(year, stoch_surf, col = 'surface')) + 
+  geom_line(aes(year, stoch_bottom, col = 'bottom')) 
+
+write_csv(df.stochio_year, '../data_processed/stoichiometry.csv')
