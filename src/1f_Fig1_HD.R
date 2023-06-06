@@ -105,7 +105,7 @@ df = df %>%
          stoch_bottom_summer = ( NO3.NO2.N_bot /1000 * 14) / ( PO4.P_bot / 1000 *31 ))
 
 
-df = df %>% dplyr::filter(year < 2015)
+# df = df %>% dplyr::filter(year < 2015)
 
 # Define colors
 cool.col <- c("#00AFBB", "#E7B800", "#FC4E07")
@@ -159,7 +159,7 @@ g7 = plotG(df, 'Jz', 'DO flux (mg/L/d)', ylimit = c(0.1,0.25) ) #+ #expression("
 g17 = plotG(df, 'St', 'Schmidt stability (J/m2)', ylimit = c(500,950)) #bquote('Number VS'~Number^2)
 g17 = plotG(df, 'St', bquote('Schmidt stability (J/'~m^2~')'), ylimit = c(500,950)) #bquote('Number VS'~Number^2)
 g18 = plotG(df, 'CumPP', 'Precipitation (mm)', ylimit = c(600,1300))
-g19 = plotG(df, 'sum.discharge', bquote('Discharge ('~m^3~'/d)'), ylimit = c(5700,18000))
+g19 = plotG(df, 'sum.discharge', bquote('Discharge ('~m^3~')'), ylimit = c(5700,18000))
 g20 = plotG(df, 'Mendotae', 'D. mendotae (mg/L)', ylimit = c(0,30))
 g21 = plotG(df, 'Pulicaria', 'D. pulicaria (mg/L)', ylimit = c(0,90))
 g22 = plotG(df, 'Bythrophes', 'Spiny water flea (mg/L)', ylimit = c(0,300))
