@@ -162,7 +162,7 @@ pdf(file = output.fig, width = 6.5, height = 2.5)
 
 par(mar = c(.5,2.5,1,.5), oma = c(1.15,0,0,0), xaxs = "i")
 
-par(fig = c(0,.42,0,1))
+par(fig = c(.01,.42,0,1))
 y.max <- 5.5
 bar.spots <- barplot(spring.av, col = col.key$color, border = NA, las = 2, names.arg = rep("",ncol(spring.av)), axes = F, xlim = c(-.3,31.7), ylim = c(0,y.max))
 box()
@@ -172,8 +172,9 @@ index.labels <- c(seq.int(from = 2, to = 14, by = 2), seq.int(from = 16, to = nc
 text(x = bar.spots[index.labels], y = -1 * y.max / 80, labels = colnames(spring.av)[index.labels], xpd = NA, srt = 90, adj = 1, cex = .7)
 segments(x0 = bar.spots[15], x1 = bar.spots[15], y0 = 0, y1 = y.max, xpd = NA, lwd = 3, col = "black", lty = c("41"))
 mtext(text = "Absolute Biomass (mg/L)", side = 2, line = 1.25, outer = F)
+mtext(text = "A)", side = 3, line = 0, outer = F, at = -7.5)
 
-par(fig = c(.42,.84,0,1), new = T)
+par(fig = c(.43,.84,0,1), new = T)
 y.max = 100
 bar.spots <- barplot(spring.av.perc, col = col.key$color, border = NA, las = 2, names.arg = rep("",ncol(spring.av.perc)), axes = F, xlim = c(-.3,31.7), ylim = c(0,y.max))
 box()
@@ -182,6 +183,7 @@ axis(side = 2, lwd = 0, line = -.6, las = 2, cex.axis = .7, at = seq.int(from = 
 text(x = bar.spots[index.labels], y = -1 * y.max / 80, labels = colnames(spring.av.perc)[index.labels], xpd = NA, srt = 90, adj = 1, cex = .7)
 segments(x0 = bar.spots[15], x1 = bar.spots[15], y0 = 0, y1 = y.max, xpd = NA, lwd = 3, col = "black", lty = c("41"))
 mtext(text = "Relative Biomass (%)", side = 2, line = 1.25, outer = F)
+mtext(text = "B)", side = 3, line = 0, outer = F, at = -7.5)
 
 # legend
 # par(fig = c(.84,1,.3,.7), new = T, mar = c(0,0,0,0))
