@@ -1,3 +1,5 @@
+# NO LONGER RUN THIS VERSION 
+
 # Package ID: knb-lter-ntl.88.30 Cataloging System:https://pasta.edirepository.org.
 # Data set title: North Temperate Lakes LTER: Phytoplankton - Madison Lakes Area 1995 - current.
 # Data set creator:  John Magnuson - University of Wisconsin 
