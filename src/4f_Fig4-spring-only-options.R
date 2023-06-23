@@ -1,5 +1,7 @@
 # RRR
 # Figure 4
+# RUN THIS VERSION OF FIGURE 4! (not the other 4f's)
+
 
 # ---- set-up ----
 
@@ -11,8 +13,8 @@ output.fig <- "figs_publication/Fig4-spring_only.pdf"
 output.spring.stats.abs <- "figs_publication/Fig4_spring_abund.csv"
 output.spring.stats.perc <- "figs_publication/Fig4_spring_perc.csv"
 
-# output.taxon.stats <- "data_processed/4f_taxon_year_averages_mg_L-other_category.rds"
-
+output.taxon.stats <- "data_processed/4f_taxon_year_averages_mg_L-other_category.rds"
+output.taxon.stats.perc <- "data_processed/4f_taxon_year_averages_perc-other_category.rds"
 # ----
 
 # Make division color key ----
@@ -51,8 +53,10 @@ spring[is.na(spring)] <- 0
 # ---- change to common names in legend ----
 
 all.equal(col.key$taxa, rownames(spring))
+all.equal(col.key$taxa, rownames(phyto))
 col.key$taxa <- c("Diatoms","Green algae","Golden algae","Cryptophytes","Cyanobacteria","Other","Dinoflagellates")
 row.names(spring) <- c("Diatoms","Green algae","Golden algae","Cryptophytes","Cyanobacteria","Other","Dinoflagellates")
+row.names(phyto) <- c("Diatoms","Green algae","Golden algae","Cryptophytes","Cyanobacteria","Other","Dinoflagellates")
 
 # ---- order by abundance ----
 
@@ -65,6 +69,20 @@ spring <- spring[index, ]
 phyto <- phyto[index, ]
 col.key <- col.key[index, ]
 all.equal(row.names(spring), col.key$taxa)
+
+# get other season's data for stats in text
+fall <- phyto[ ,key$Season == "fall"]
+fall[is.na(fall)] <- 0
+all.equal(row.names(fall), col.key$taxa)
+
+stratified <- phyto[ ,key$Season == "stratified"]
+stratified[is.na(stratified)] <- 0
+all.equal(row.names(stratified), col.key$taxa)
+
+ice <- phyto[ ,key$Season == "ice-on"]
+ice[is.na(ice)] <- 0
+all.equal(row.names(ice), col.key$taxa)
+
 
 # ---- average by year ----
 
@@ -82,10 +100,30 @@ get.yearly.av <- function(my.phy){
   return(my.phy.av)
 }
 
-
 spring.av <- get.yearly.av(my.phy = spring)
 all.equal(row.names(spring.av), col.key$taxa)
-setdiff(x = 1996:2020, y = colnames(spring.av)) # missing 2017 before, no years now
+setdiff(x = 1996:2020, y = colnames(spring.av)) # no missing years
+
+# plus other years for text stats
+stratified.av <- get.yearly.av(my.phy = stratified)
+all.equal(row.names(stratified.av), col.key$taxa)
+setdiff(x = 1996:2020, y = colnames(stratified.av)) # no missing years
+
+fall.av <- get.yearly.av(my.phy = fall)
+all.equal(row.names(fall.av), col.key$taxa)
+setdiff(x = 1996:2020, y = colnames(fall.av)) # missing 2000 
+fall.av <- cbind(fall.av[ ,1:4],
+                 "2000" = NA, 
+                 fall.av[ ,5:ncol(fall.av)])
+setdiff(x = 1996:2020, y = colnames(fall.av))
+
+ice.av <- get.yearly.av(my.phy = ice)
+all.equal(row.names(ice.av), col.key$taxa)
+setdiff(x = 1996:2020, y = colnames(ice.av)) # missing 2002
+ice.av <- cbind(ice.av[ ,1:6],
+                "2002" = NA,
+                ice.av[ ,7:ncol(ice.av)])
+setdiff(x = 1996:2020, y = colnames(ice.av))
 
 
 # ---- make relative abundance to focus on composition ----
@@ -100,12 +138,18 @@ get.rel.abund <- function(my.av){
 
 spring.av.perc <- get.rel.abund(my.av = spring.av)
 
+# plus other years for text stats
+stratified.av.perc <- get.rel.abund(my.av = stratified.av)
+fall.av.perc <- get.rel.abund(my.av = fall.av)
+ice.av.perc <- get.rel.abund(my.av = ice.av)
+
 # ---- save data behind plot ----
 
 write.csv(x = spring.av, file = output.spring.stats.abs, quote = F, row.names = T)
 write.csv(x = spring.av.perc, file = output.spring.stats.perc, quote = F, row.names = T)
 
-# saveRDS(object = list("ice" = ice.av, "spring" = spring.av, "stratified" = stratified.av, "fall" = fall.av), file = output.taxon.stats)
+saveRDS(object = list("ice" = ice.av, "spring" = spring.av, "stratified" = stratified.av, "fall" = fall.av), file = output.taxon.stats)
+saveRDS(object = list("ice" = ice.av.perc, "spring" = spring.av.perc, "stratified" = stratified.av.perc, "fall" = fall.av.perc), file = output.taxon.stats.perc)
 
 # ---- add a gap to draw the 2010 demarcation line ----
 
