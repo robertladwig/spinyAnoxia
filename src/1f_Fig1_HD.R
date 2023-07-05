@@ -105,7 +105,7 @@ df = df %>%
          stoch_bottom_summer = ( NO3.NO2.N_bot /1000 * 14) / ( PO4.P_bot / 1000 *31 ))
 
 
-# df = df %>% dplyr::filter(year < 2015)
+df = df %>% dplyr::filter(year < 2016)
 
 # Define colors
 cool.col <- c("#00AFBB", "#E7B800", "#FC4E07")
@@ -221,9 +221,9 @@ p19 = plotBP('Bacillariophyta', '')
 p20 = plotBP('Cyanophyta', '')
 p22 = plotBP('stoch_surf', '')
 
-# compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
-# m.df.prior %>% dplyr::filter(variable == 'AF') %>% dplyr::group_by(class) %>% summarise(mean = mean(value), sd = sd(value))
-# compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'AF'), method ="kruskal.test")
+compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'AF'))
+m.df.prior %>% dplyr::filter(variable == 'AF') %>% dplyr::group_by(class) %>% summarise(mean = mean(value), sd = sd(value))
+compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'AF'), method ="kruskal.test")
 
 # compare_means(value ~ class, data = m.df.prior %>% dplyr::filter(variable == 'med'))
 # compare_means(value ~ class, data =  m.df.prior %>% dplyr::filter(variable == 'med'), method ="kruskal.test")
