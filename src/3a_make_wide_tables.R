@@ -121,4 +121,4 @@ cat(created.file.annual.avs)
 write.csv(x = annual.aves, file = created.file.annual.avs, row.names = F)
 
 cat(created.file.spring.avs)
-write.csv(x = annual.aves, file = created.file.spring.avs, row.names = F)
+write.csv(x = spring.aves, file = created.file.spring.avs, row.names = F)
