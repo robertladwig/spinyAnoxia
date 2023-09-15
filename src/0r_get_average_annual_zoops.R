@@ -17,7 +17,7 @@ zoops.av[is.na(zoops.av)] <- 0
 zoops.av <- as.data.table(zoops.av)
 
 zoops.av$tot.zoops <- rowSums(x = zoops.av[ ,-c("year4")], na.rm = T)
-zoops.av$tot.zoops.no.SWF <- rowSums(x = zoops.av[ ,-c("year4","Bythotrephes Longimanus","tot.zoops")], na.rm = T)
+zoops.av$tot.zoops.no.pred <- rowSums(x = zoops.av[ ,-c("year4","Bythotrephes Longimanus","tot.zoops","Leptodora Kindti")], na.rm = T)
 
 write.csv(x = zoops.av, file = "data_processed/0r_annual_zoop_counts.csv", row.names = F)
 
@@ -31,7 +31,7 @@ zoops.av[is.na(zoops.av)] <- 0
 zoops.av <- as.data.table(zoops.av)
 
 zoops.av$tot.zoops <- rowSums(x = zoops.av[ ,-c("year4")], na.rm = T)
-zoops.av$tot.zoops.no.SWF <- rowSums(x = zoops.av[ ,-c("year4","Bythotrephes Longimanus","tot.zoops")], na.rm = T)
+zoops.av$tot.zoops.no.pred <- rowSums(x = zoops.av[ ,-c("year4","Bythotrephes Longimanus","tot.zoops","Leptodora Kindti")], na.rm = T)
 
 write.csv(x = zoops.av, file = "data_processed/0r_annual_zoop_biomass.csv", row.names = F)
 

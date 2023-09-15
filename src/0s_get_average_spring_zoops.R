@@ -35,7 +35,8 @@ zoops.av[is.na(zoops.av)] <- 0
 zoops.av <- as.data.table(zoops.av)
 
 zoops.av$tot.zoops <- rowSums(x = zoops.av[ ,-c("year4")], na.rm = T)
-# zoops.av$tot.zoops.no.SWF <- rowSums(x = zoops.av[ ,-c("year4","Bythotrephes Longimanus","tot.zoops")], na.rm = T) # no bytho in spring
+# zoops.av$tot.zoops.no.SWF <- rowSums(x = zoops.av[ ,-c("year4","Bythotrephes Longimanus","tot.zoops","Leptodora Kindti")], na.rm = T) # no predatory zoops in spring?
+zoops.av$tot.zoops.no.pred <- zoops.av$tot.zoops
 
 write.csv(x = zoops.av, file = "data_processed/0s_spring_zoop_counts.csv", row.names = F)
 
@@ -49,7 +50,8 @@ zoops.av[is.na(zoops.av)] <- 0
 zoops.av <- as.data.table(zoops.av)
 
 zoops.av$tot.zoops <- rowSums(x = zoops.av[ ,-c("year4")], na.rm = T)
-# zoops.av$tot.zoops.no.SWF <- rowSums(x = zoops.av[ ,-c("year4","Bythotrephes Longimanus","tot.zoops")], na.rm = T) # no bytho in spring
+# zoops.av$tot.zoops.no.SWF <- rowSums(x = zoops.av[ ,-c("year4","Bythotrephes Longimanus","tot.zoops","Leptodora Kindti")], na.rm = T) # no predatory zoops in spring?
+zoops.av$tot.zoops.no.pred <- zoops.av$tot.zoops
 
 write.csv(x = zoops.av, file = "data_processed/0s_spring_zoop_biomass.csv", row.names = F)
 
