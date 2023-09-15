@@ -116,7 +116,8 @@ df = df %>%
 str(df)
 head(df)
 
-df_red2 = df #%>% dplyr::filter(year < 2015)
+df_red2 = df #%>% dplyr::filter(year < 2016)
+df_red2 = df %>% dplyr::filter(year < 2016)
 
 df.red <- df_red2[, c("AF",'strat_on' , "strat_off" , "strat_duration" ,
                  "ice_on" , "ice_off" , "ice_duration" ,
@@ -231,11 +232,11 @@ p.linear <- p + geom_line(aes(y = lwr), color = "grey", linetype = "dashed")+
 
 
 
-idx <- match(c( 'strat_off' , 'ice_duration' , 'Days.1.mg.L' , 'PO4.P_surf' , 'PO4.P_bot' , 'Bythrophes', 'AF'), colnames(df.red))
+idx <- match(c('strat_duration' ,'strat_off' , 'ice_duration' , 'Days.1.mg.L' , 'PO4.P_surf' , 'PO4.P_bot' , 'Bythrophes', 'AF'), colnames(df.red))
 hyp.data2 <- df.red[, idx]
 
 # AF ~ strat_off + ice_duration + Days.1.mg.L + PO4.P_surf + PO4.P_bot + Spiny
-colnames(hyp.data2) = c('Strat.dur', 'Ice.dur', 'Days.1.0','PO4.surf','PO$.bot','SWF', 'Anoxic.Factor')
+colnames(hyp.data2) = c('Strat.dur','Strat.break', 'Ice.dur', 'Days.1.0','PO4.surf','PO$.bot','SWF', 'Anoxic.Factor')
 
 res=cor(hyp.data2, method = c("pearson"))
 
