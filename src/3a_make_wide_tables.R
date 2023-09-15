@@ -10,9 +10,13 @@ library(data.table)
 
 phyto <- readRDS(file = "data_input/0a_phyto_knb-lter-ntl.88.30.rds")
 
+seasons <- readRDS(file = "data_processed/4a_seasons_by_year.rds")
+
 created.file <- "data_processed/3a_phyto_list.rds"
 
 created.file.annual.avs <- "data_processed/3a_phyto_annual_average_biomass.csv"
+
+created.file.spring.avs <- "data_processed/3a_phyto_spring_average_biomass.csv"
 
 # ----
 
@@ -82,9 +86,39 @@ annual.aves$Total.Mean.Biomass.mg.L <- rowSums(annual.aves[ ,-1], na.rm = T)
 annual.aves <- as.matrix(annual.aves)
 annual.aves[is.na(annual.aves)] <- 0
 
+# ---- spring averages for models ----
+
+spring.aves <- my.phyto$div |>
+  t()
+
+spring.aves <- data.table("Date" = parse_date_time(row.names(spring.aves), orders = "ymd"), spring.aves)
+spring.aves$is.spring <- FALSE
+spring.aves <- spring.aves[year(Date) > 1995, ]
+
+for (yr in unique(year(spring.aves$Date))){
+  seas <- seasons[seasons$Year == yr, ]
+  spring.aves[year(Date) == yr & yday(Date) >= seas$Ice.Off & yday(Date) < seas$Strat.Start, is.spring := TRUE]
+}
+
+spring.aves <- spring.aves[is.spring == TRUE]
+spring.aves[ ,`:=`(Year = year(Date),
+                   Date = NULL,
+                   is.spring = NULL)]
+
+spring.aves <- melt(data = spring.aves, id.vars = "Year", variable.name = "Division", value.name = "biomass")
+spring.aves <- dcast(data = spring.aves, formula = Year ~ Division, value.var = "biomass", fun.aggregate = mean, na.rm = T)
+
+spring.aves$Total.Mean.Biomass.mg.L <- rowSums(spring.aves[ ,-1], na.rm = T)
+
+spring.aves <- as.matrix(spring.aves)
+spring.aves[is.na(spring.aves)] <- 0
+
 # ----
 cat(created.file)
 saveRDS(object = my.phyto, file = created.file)
 
 cat(created.file.annual.avs)
 write.csv(x = annual.aves, file = created.file.annual.avs, row.names = F)
+
+cat(created.file.spring.avs)
+write.csv(x = annual.aves, file = created.file.spring.avs, row.names = F)
