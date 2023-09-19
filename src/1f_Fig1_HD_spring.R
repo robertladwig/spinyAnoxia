@@ -27,8 +27,11 @@ nutrients <- read_csv('data_processed/nutrients.csv')
 spiny <- read_csv('data_processed/spiny.csv')
 physics <- read_csv('data_processed/physical_timings.csv')
 rainfall <- read_csv('data_processed/precipitation.csv')
+# zoops <- read_csv('data_processed/0s_spring_zoop_biomass.csv')
+# phyto <- read_csv('data_processed/3a_phyto_spring_average_biomass.csv')
 zoops <- read_csv('data_processed/0r_annual_zoop_biomass.csv')
 phyto <- read_csv('data_processed/3a_phyto_annual_average_biomass.csv')
+phyto2 <-  read_csv('data_processed/3a_phyto_annual_average_biomass.csv')
 stoicho <- read_csv('data_processed/stoichiometry.csv')
 
 # Define colors
@@ -73,8 +76,10 @@ df.rainfall <- rainfall %>%
 
 df.zoops <- zoops %>%
   dplyr::filter(year4 >= 1995 & year4 <= 2021) %>%
-  rename(year = year4, Mendotae = `Daphnia Mendotae`, Pulicaria =  `Daphnia Pulicaria`, Bythrophes = `Bythotrephes Longimanus`) %>%
-  dplyr::select(year, tot.zoops.no.pred, Mendotae, Pulicaria, Bythrophes, Daphnia)
+  rename(year = year4, Mendotae = `Daphnia Mendotae`, Pulicaria =  `Daphnia Pulicaria`) %>%
+  mutate( Mendotae = (Mendotae * 100) /  tot.zoops.no.pred,
+          Pulicaria = (Pulicaria * 100) /  tot.zoops.no.pred) %>%
+  dplyr::select(year, tot.zoops, Mendotae, Pulicaria, Daphnia)
 
 df.phyto <- phyto %>%
   dplyr::filter(Year >= 1995 & Year <= 2021) %>%
@@ -160,11 +165,11 @@ g17 = plotG(df, 'St', 'Schmidt stability (J/m2)', ylimit = c(500,950)) #bquote('
 g17 = plotG(df, 'St', bquote('Schmidt stability (J/'~m^2~')'), ylimit = c(500,950)) #bquote('Number VS'~Number^2)
 g18 = plotG(df, 'CumPP', 'Precipitation (mm)', ylimit = c(600,1300))
 g19 = plotG(df, 'sum.discharge', bquote('Discharge ('~m^3~')'), ylimit = c(5700,18000))
-g20 = plotG(df, 'Mendotae', 'D. mendotae (mg/L)', ylimit = c(0,30))
-g21 = plotG(df, 'Pulicaria', 'D. pulicaria (mg/L)', ylimit = c(0,90))
-g22 = plotG(df, 'Bythrophes', 'Spiny water flea (mg/L)', ylimit = c(0,300))
-g23 = plotG(df, 'Bacillariophyta', 'Diatoms (mg/L)', ylimit = c(0,3))
-g24 = plotG(df, 'Cyanophyta', 'Cyanobacteria (mg/L)', ylimit = c(0,5))
+g20 = plotG(df, 'Mendotae', 'D. mendotae (%)', ylimit = c(0,100))
+g21 = plotG(df, 'Pulicaria', 'D. pulicaria (%)', ylimit = c(0,100))
+# g22 = plotG(df, 'Bythrophes', 'Spiny water flea (mg/L)', ylimit = c(0,300))
+g23 = plotG(df, 'Bacillariophyta', 'Diatoms (mg/L)', ylimit = c(0,5.5))
+g24 = plotG(df, 'Cyanophyta', 'Cyanobacteria (mg/L)', ylimit = c(0,0.7))
 g25 = plotG(df, 'stoch_surf ', 'N:P (molar)', ylimit = c(0,5)) +
   geom_line(aes(year, stoch_bottom_summer  ), linetype = 'dashed', size = 0.3) +
   geom_point(aes(year, stoch_bottom_summer ), size = 1)
@@ -177,7 +182,7 @@ library(ggpubr)
 df.prior = df %>%
   mutate('class' = ifelse(year < 2010, 'prior 2010','post 2010')) %>%
   dplyr::select(class, AF, strat_duration, Jz, Jv, Days.1.mg.L, discharge, ice_duration, Clearwater.Duration, pH, PO4.P_surf, NO3.NO2.N_surf, RSi, Spiny,
-                St, CumPP, sum.discharge, Bythrophes, Pulicaria, Mendotae, Bacillariophyta, Cyanophyta,
+                St, CumPP, sum.discharge, Pulicaria, Mendotae, Bacillariophyta, Cyanophyta,
                 stoch_bottom, stoch_surf)
 m.df.prior <- reshape2::melt(df.prior, id = 'class')
 
@@ -216,7 +221,7 @@ p14 = plotBP('CumPP', '')
 p15 = plotBP('sum.discharge', '')
 p16 = plotBP('Mendotae', '')
 p17 = plotBP('Pulicaria', '')
-p18 = plotBP('Bythrophes', '')
+# p18 = plotBP('Bythrophes', '')
 p19 = plotBP('Bacillariophyta', '')
 p20 = plotBP('Cyanophyta', '')
 p22 = plotBP('stoch_surf', '')
@@ -372,31 +377,35 @@ plt12 <- (g18 + ggtitle("A)")+ p14) + plot_layout(widths = c(2, 1)) & scale_y_co
 plt13 <- (g13 + ggtitle("N)")+ p9) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g13)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # NO3
 plt14 <- (g19 + ggtitle("B)")+ p15) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g19)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # Discharge
 
-plt15 <- (g20 + ggtitle("E)")+ p16) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g20)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # mendotae
-plt16 <- (g21 + ggtitle("F)")+ p17) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g21)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # pulicaria
-plt17 <- (g22 + ggtitle("D)")+ p18) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g22)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # bythrophes
+plt15 <- (g20 + ggtitle("A)")+ p16) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g20)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # mendotae
+plt16 <- (g21 + ggtitle("B)")+ p17) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g21)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # pulicaria
+# plt17 <- (g22 + ggtitle("D)")+ p18) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g22)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # bythrophes
 
-plt18 <- (g23 + ggtitle("H)")+ p19) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g23)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # diatoms
-plt19 <- (g24 + ggtitle("I)")+ p20) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g24)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # cyanos
+plt18 <- (g23 + ggtitle("C)")+ p19) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g23)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # diatoms
+plt19 <- (g24 + ggtitle("D)")+ p20) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g24)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # cyanos
 
 plt20 <- (g26 + ggtitle("O)")+ p22) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g26)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # stoich
 
 plt21 <- (g27 + ggtitle("A)")+ p22) + plot_layout(widths = c(2, 1)) & scale_y_continuous(limits = layer_scales(g27)$y$range$range, expand = expansion(mult = c(0.05,0.2))) # stoich
 
 # Final figure
-fig.plt <- (plt1 | plt9) / (plt3 | plt5) / (plt3 | plt5) / (plt5 | plt4) / (plt2 | plt11)/ (plt6 | plt13) / (plt12 | plt14)&
+fig.plt <- (plt15 | plt16 )  &
   theme(plot.title = element_text(size = 7, face = "bold"))
 
-ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
+# Final figure
+# fig.plt <- (plt15 | plt16 ) / (plt18 | plt19 )  &
+#   theme(plot.title = element_text(size = 7, face = "bold"))
 
-fig.plt <- (plt1 | plt3 | plt4) / (plt17 | plt15 | plt16   ) / ( plt5 | plt18 | plt19)  / (plt2 | plt11 | plt10) / (plt6 | plt13 | plt20 )&
-  theme(plot.title = element_text(size = 7, face = "bold"))
-ggsave(plot = fig.plt , 'figs_publication/Fig1a_3x4.png', dpi = 500, units = 'in', width = 9.5, height = 7)
-# ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
+ggsave(plot = fig.plt , 'figs_publication/SI_Fig3.png', dpi = 500, units = 'in', width = 9, height = 2)
 
-fig.plt <- (plt12 | plt14 ) &
-  theme(plot.title = element_text(size = 7, face = "bold"))
-ggsave(plot = fig.plt , 'figs_publication/SI_Fig2.png', dpi = 500, units = 'in', width = 9, height = 2)
-plt12
-plt14
+# fig.plt <- (plt15 | plt16 ) / (plt18 | plt19    ) &
+#   theme(plot.title = element_text(size = 7, face = "bold"))
+# ggsave(plot = fig.plt , 'figs_publication/Fig1a_3x4_si.png', dpi = 500, units = 'in', width = 9.5, height = 7)
+# # ggsave(plot = fig.plt , 'figs_publication/Fig1a.png', dpi = 500, units = 'in', width = 6.5, height = 8.5)
+# 
+# fig.plt <- (plt12 | plt14 ) &
+#   theme(plot.title = element_text(size = 7, face = "bold"))
+# ggsave(plot = fig.plt , 'figs_publication/SI_Fig2.png', dpi = 500, units = 'in', width = 9, height = 2)
+# plt12
+# plt14
 
