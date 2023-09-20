@@ -27,10 +27,10 @@ nutrients <- read_csv('data_processed/nutrients.csv')
 spiny <- read_csv('data_processed/spiny.csv')
 physics <- read_csv('data_processed/physical_timings.csv')
 rainfall <- read_csv('data_processed/precipitation.csv')
-# zoops <- read_csv('data_processed/0s_spring_zoop_biomass.csv')
-# phyto <- read_csv('data_processed/3a_phyto_spring_average_biomass.csv')
-zoops <- read_csv('data_processed/0r_annual_zoop_biomass.csv')
-phyto <- read_csv('data_processed/3a_phyto_annual_average_biomass.csv')
+zoops <- read_csv('data_processed/0s_spring_zoop_biomass.csv')
+phyto <- read_csv('data_processed/3a_phyto_spring_average_biomass.csv')
+# zoops <- read_csv('data_processed/0r_annual_zoop_biomass.csv')
+# phyto <- read_csv('data_processed/3a_phyto_annual_average_biomass.csv')
 phyto2 <-  read_csv('data_processed/3a_phyto_annual_average_biomass.csv')
 stoicho <- read_csv('data_processed/stoichiometry.csv')
 
@@ -77,8 +77,8 @@ df.rainfall <- rainfall %>%
 df.zoops <- zoops %>%
   dplyr::filter(year4 >= 1995 & year4 <= 2021) %>%
   rename(year = year4, Mendotae = `Daphnia Mendotae`, Pulicaria =  `Daphnia Pulicaria`) %>%
-  mutate( Mendotae = (Mendotae * 100) /  tot.zoops.no.pred,
-          Pulicaria = (Pulicaria * 100) /  tot.zoops.no.pred) %>%
+  # mutate( Mendotae = (Mendotae * 100) /  tot.zoops.no.pred,
+          # Pulicaria = (Pulicaria * 100) /  tot.zoops.no.pred) %>%
   dplyr::select(year, tot.zoops, Mendotae, Pulicaria, Daphnia)
 
 df.phyto <- phyto %>%
@@ -166,7 +166,8 @@ g17 = plotG(df, 'St', bquote('Schmidt stability (J/'~m^2~')'), ylimit = c(500,95
 g18 = plotG(df, 'CumPP', 'Precipitation (mm)', ylimit = c(600,1300))
 g19 = plotG(df, 'sum.discharge', bquote('Discharge ('~m^3~')'), ylimit = c(5700,18000))
 g20 = plotG(df, 'Mendotae', 'D. mendotae (%)', ylimit = c(0,100))
-g21 = plotG(df, 'Pulicaria', 'D. pulicaria (%)', ylimit = c(0,100))
+g20 = plotG(df, 'Mendotae', 'D. mendotae (mg/L)', ylimit = c(0,2.0))
+g21 = plotG(df, 'Pulicaria', 'D. pulicaria (mg/L)', ylimit = c(0,140))
 # g22 = plotG(df, 'Bythrophes', 'Spiny water flea (mg/L)', ylimit = c(0,300))
 g23 = plotG(df, 'Bacillariophyta', 'Diatoms (mg/L)', ylimit = c(0,5.5))
 g24 = plotG(df, 'Cyanophyta', 'Cyanobacteria (mg/L)', ylimit = c(0,0.7))
@@ -396,7 +397,7 @@ fig.plt <- (plt15 | plt16 )  &
 # fig.plt <- (plt15 | plt16 ) / (plt18 | plt19 )  &
 #   theme(plot.title = element_text(size = 7, face = "bold"))
 
-ggsave(plot = fig.plt , 'figs_publication/SI_Fig3.png', dpi = 500, units = 'in', width = 9, height = 2)
+ggsave(plot = fig.plt , 'figs_publication/SI_Fig3_spring_total.png', dpi = 500, units = 'in', width = 9, height = 2)
 
 # fig.plt <- (plt15 | plt16 ) / (plt18 | plt19    ) &
 #   theme(plot.title = element_text(size = 7, face = "bold"))
